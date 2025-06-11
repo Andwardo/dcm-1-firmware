@@ -1,0 +1,1 @@
+echo "build/\nsdkconfig.old\n.DS_Store" > .gitignore

@@ -1,0 +1,2 @@
+source /Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/bootloader/gdbinit/symbols
+source /Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/bootloader/gdbinit/connect
