@@ -419,12 +419,27 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/main/cmake_install.cmake")
+  include("/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/board_manager/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
   include("/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/esp32-wifi-manager/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/mqtt_manager/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/app_logic/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/main/cmake_install.cmake")
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT

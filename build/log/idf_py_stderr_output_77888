@@ -1,0 +1,32 @@
+[0;33m--- esp-idf-monitor 1.6.2 on /dev/cu.usbmodem1201 115200[0m
+[0;33m--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H[0m
+[1;31m--- Error: read failed: [Errno 6] Device not configured[0m
+[0;33m--- Waiting for the device to reconnect[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m.[0m[0;33m[0m
+[0;33m--- 0x403759ec: rtc_brownout_isr_handler at /Users/andrewballard/esp/esp-idf/components/esp_system/port/brownout.c:52
+[0m
+[0;33m--- Warning: Checksum mismatch between flashed and built applications. Checksum of built application is 136c34e7866b819cfd75eee555dd546eb7f8efbbafc46f643bc64443a59f4099[0m
+[0;33m--- 0x403759ec: rtc_brownout_isr_handler at /Users/andrewballard/esp/esp-idf/components/esp_system/port/brownout.c:52
+[0m
+[0;33m--- Warning: Checksum mismatch between flashed and built applications. Checksum of built application is 136c34e7866b819cfd75eee555dd546eb7f8efbbafc46f643bc64443a59f4099[0m
+[0;33m--- 0x403759ec: rtc_brownout_isr_handler at /Users/andrewballard/esp/esp-idf/components/esp_system/port/brownout.c:52
+[0m
+[0;33m--- Warning: Checksum mismatch between flashed and built applications. Checksum of built application is 136c34e7866b819cfd75eee555dd546eb7f8efbbafc46f643bc64443a59f4099[0m
+[0;33m--- 0x403759ec: rtc_brownout_isr_handler at /Users/andrewballard/esp/esp-idf/components/esp_system/port/brownout.c:52
+[0m
+[0;33m--- Warning: Checksum mismatch between flashed and built applications. Checksum of built application is 136c34e7866b819cfd75eee555dd546eb7f8efbbafc46f643bc64443a59f4099[0m
+[0;33m--- 0x403759ec: rtc_brownout_isr_handler at /Users/andrewballard/esp/esp-idf/components/esp_system/port/brownout.c:52
+[0m
+[0;33m--- Warning: Checksum mismatch between flashed and built applications. Checksum of built application is 136c34e7866b819cfd75eee555dd546eb7f8efbbafc46f643bc64443a59f4099[0m
+[0;33m--- 0x403759ec: rtc_brownout_isr_handler at /Users/andrewballard/esp/esp-idf/components/esp_system/port/brownout.c:52
+[0m
+[0;33m--- Warning: Checksum mismatch between flashed and built applications. Checksum of built application is 136c34e7866b819cfd75eee555dd546eb7f8efbbafc46f643bc64443a59f4099[0m
+[0;33m--- 0x403759ec: rtc_brownout_isr_handler at /Users/andrewballard/esp/esp-idf/components/esp_system/port/brownout.c:52
+[0m
+[0;33m--- Warning: Checksum mismatch between flashed and built applications. Checksum of built application is 136c34e7866b819cfd75eee555dd546eb7f8efbbafc46f643bc64443a59f4099[0m
+[0;33m--- 0x403759ec: rtc_brownout_isr_handler at /Users/andrewballard/esp/esp-idf/components/esp_system/port/brownout.c:52
+[0m
+[0;33m--- Warning: Checksum mismatch between flashed and built applications. Checksum of built application is 136c34e7866b819cfd75eee555dd546eb7f8efbbafc46f643bc64443a59f4099[0m
+[0;33m--- 0x403759ec: rtc_brownout_isr_handler at /Users/andrewballard/esp/esp-idf/components/esp_system/port/brownout.c:52
+[0m
+[0;33m--- Warning: Checksum mismatch between flashed and built applications. Checksum of built application is 136c34e7866b819cfd75eee555dd546eb7f8efbbafc46f643bc64443a59f4099[0m
+[0m

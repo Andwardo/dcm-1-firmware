@@ -1,0 +1,9 @@
+[0;33m--- esp-idf-monitor 1.6.2 on /dev/cu.usbmodem 115200[0m
+[0;33m--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H[0m
+[0;33m--- Connection to /dev/cu.usbmodem failed. Available ports:
+--- /dev/cu.debug-console
+--- /dev/cu.JBLFlip5
+--- /dev/cu.BlueSkyBose
+--- /dev/cu.usbmodem1401
+--- /dev/cu.usbmodem58CF1121401[0m
+[0m
