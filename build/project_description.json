@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "main",
-    "project_version":    "651e28f-dirty",
+    "project_version":    "455a87c-dirty",
     "project_path":       "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1",
     "idf_path":           "/Users/andrewballard/esp/esp-idf",
     "build_dir":          "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build",

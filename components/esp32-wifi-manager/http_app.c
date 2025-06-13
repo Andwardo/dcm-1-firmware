@@ -1,15 +1,16 @@
 /*
  * File: components/esp32-wifi-manager/http_app.c
  *
- * Created on: 11 June 2025 08:35:00
- * Last edited on: 12 June 2025 09:50:00
+ * Created on: 12 June 2025 22:10:00
+ * Last edited on: 12 June 2025 22:10:00
  *
- * Version: 7.5.2
+ * Version: 7.8.0
  *
  * Author: R. Andrew Ballard (c) 2025
  *
  */
-
+#include "http_app.h"
+#include "wifi_manager.h"
 #include <string.h>
 #include <stdlib.h>
 #include "sys/param.h"
@@ -17,9 +18,7 @@
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "esp_mac.h"
-#include "wifi_manager.h"
 #include "cJSON.h"
-#include "http_app.h" // Include the new private header
 
 /* embedded binary data */
 extern const uint8_t style_css_start[] asm("_binary_style_css_start");
@@ -31,6 +30,7 @@ extern const uint8_t index_html_end[]   asm("_binary_index_html_end");
 
 static const char TAG[] = "http_app";
 static httpd_handle_t httpd_handle = NULL;
+
 
 static esp_err_t http_server_style_css_handler(httpd_req_t *req){
 	ESP_LOGI(TAG, "style.css requested");

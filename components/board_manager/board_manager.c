@@ -1,16 +1,15 @@
 /*
  * File: components/board_manager/board_manager.c
  *
- * Created on: 12 June 2025 21:20:00
- * Last edited on: 12 June 2025 21:40:00
+ * Created on: 12 June 2025 23:30:00
+ * Last edited on: 12 June 2025 23:30:00
  *
- * Version: 7.6.1
+ * Version: 8.0.0
  *
  * Author: R. Andrew Ballard (c) 2025
  *
  */
 #include "board_manager.h"
-#include "driver/i2c.h"
 #include "esp_log.h"
 
 static const char *TAG = "BOARD_MANAGER";
@@ -29,7 +28,7 @@ esp_err_t board_manager_init(void)
         .pull_up_en = GPIO_PULLUP_ENABLE,
     };
     gpio_config(&button_conf);
-    
+
     ESP_LOGI(TAG, "Board peripherals initialized.");
     return ESP_OK;
 }
