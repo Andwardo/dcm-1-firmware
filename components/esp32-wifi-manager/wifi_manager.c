@@ -1,15 +1,18 @@
 /*
  * File: components/esp32-wifi-manager/wifi_manager.c
  *
- * Created on: 13 June 2025 10:00:00
- * Last edited on: 13 June 2025 10:00:00
+ * Created on: 13 June 2025 11:10:00
+ * Last edited on: 13 June 2025 11:10:00
  *
- * Version: 8.0.0
+ * Version: 8.0.2
  *
  * Author: R. Andrew Ballard (c) 2025
  *
  */
 
+#include <locale.h>
+#include <stdarg.h>
+#include <stdint.h>
 #include "wifi_manager.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
