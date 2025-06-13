@@ -1,63 +1,84 @@
 /*
  * File: components/mqtt_manager/mqtt_manager.c
  *
- * Created on: 12 June 2025 23:30:00
- * Last edited on: 12 June 2025 23:30:00
+ * Created on: 13 June 2025 10:00:00
+ * Last edited on: 13 June 2025 10:00:00
  *
  * Version: 8.0.0
  *
  * Author: R. Andrew Ballard (c) 2025
  *
  */
+
 #include "mqtt_manager.h"
-#include <string.h>
+#include "certs.h"
 #include "esp_log.h"
+#include "esp_event.h"
 #include "mqtt_client.h"
-#include "esp_tls.h"
+#include "freertos/event_groups.h"
 
 static const char *TAG = "MQTT_MANAGER";
+static esp_mqtt_client_handle_t s_client = NULL;
+static EventGroupHandle_t s_mqtt_event_group = NULL;
 
-static void log_error_if_nonzero(const char *message, int error_code)
+static void mqtt_event_handler(void *handler_args, esp_event_base_t base,
+                               int32_t event_id, void *event_data)
 {
-    if (error_code != 0) {
-        ESP_LOGE(TAG, "Last error %s: 0x%x", message, error_code);
+    switch ((esp_mqtt_event_id_t)event_id) {
+        case MQTT_EVENT_CONNECTED:
+            ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
+            xEventGroupSetBits(s_mqtt_event_group, MQTT_CONNECTED_BIT);
+            break;
+        case MQTT_EVENT_DISCONNECTED:
+            ESP_LOGW(TAG, "MQTT_EVENT_DISCONNECTED");
+            break;
+        default:
+            break;
     }
 }
 
-static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
+void mqtt_manager_init(void)
 {
-    esp_mqtt_event_handle_t event = event_data;
-    switch ((esp_mqtt_event_id_t)event_id) {
-    case MQTT_EVENT_CONNECTED:
-        ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED: Successfully connected to mqtts://dev1.pgapi.net:8883");
-        break;
-    case MQTT_EVENT_DISCONNECTED:
-        ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
-        break;
-    case MQTT_EVENT_ERROR:
-        ESP_LOGE(TAG, "MQTT_EVENT_ERROR");
-        if (event->error_handle->error_type == MQTT_ERROR_TYPE_TCP_TRANSPORT) {
-            log_error_if_nonzero("reported from esp-tls", event->error_handle->esp_tls_last_esp_err);
-            log_error_if_nonzero("reported from tls stack", event->error_handle->esp_tls_stack_err);
-            log_error_if_nonzero("captured as transport's socket errno",  event->error_handle->esp_transport_sock_errno);
-            ESP_LOGI(TAG, "Last errno string (%s)", strerror(event->error_handle->esp_transport_sock_errno));
-        }
-        break;
-    default:
-        ESP_LOGD(TAG, "Other MQTT event id:%d", (int)event->event_id);
-        break;
-    }
+    s_mqtt_event_group = xEventGroupCreate();
+
+    const esp_mqtt_client_config_t cfg = {
+        .uri = CONFIG_MQTT_URI,
+        .cert_pem = (const char *)server_cert_pem_start,
+    };
+    s_client = esp_mqtt_client_init(&cfg);
+    esp_mqtt_client_register_event(s_client, ESP_EVENT_ANY_ID,
+                                   mqtt_event_handler, NULL);
 }
 
 void mqtt_manager_start(void)
 {
-    const esp_mqtt_client_config_t mqtt_cfg = {
-        .broker.address.uri = "mqtts://dev1.pgapi.net:8883",
-    };
-
-    ESP_LOGI(TAG, "Starting MQTT client...");
-    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
-    ESP_ERROR_CHECK(esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL));
-    ESP_ERROR_CHECK(esp_mqtt_client_start(client));
+    if (s_client) {
+        esp_mqtt_client_start(s_client);
+    }
 }
 
+EventGroupHandle_t mqtt_event_group_handle(void)
+{
+    return s_mqtt_event_group;
+}
+
+esp_err_t mqtt_manager_publish_sensor_state(bool power, bool water, bool pads)
+{
+    if (!s_client) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    char payload[128];
+    int len = snprintf(payload, sizeof(payload),
+                       "{\"power\":%s,\"water\":%s,\"pads\":%s}",
+                       power ? "true" : "false",
+                       water ? "true" : "false",
+                       pads ? "true" : "false");
+    if (len < 0) {
+        return ESP_FAIL;
+    }
+    int msg_id = esp_mqtt_client_publish(
+        s_client, CONFIG_MQTT_TOPIC, payload, len, 1, 0
+    );
+    ESP_LOGI(TAG, "Published msg_id=%d payload=%s", msg_id, payload);
+    return msg_id >= 0 ? ESP_OK : ESP_FAIL;
+}

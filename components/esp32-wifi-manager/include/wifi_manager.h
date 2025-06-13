@@ -1,38 +1,38 @@
 /*
  * File: components/esp32-wifi-manager/include/wifi_manager.h
  *
- * Created on: 12 June 2025 22:10:00
- * Last edited on: 12 June 2025 23:10:00
+ * Created on: 13 June 2025 10:00:00
+ * Last edited on: 13 June 2025 10:00:00
  *
- * Version: 7.9.1
+ * Version: 8.0.0
  *
  * Author: R. Andrew Ballard (c) 2025
  *
  */
 
-#ifndef WIFI_MANAGER_H_
-#define WIFI_MANAGER_H_
+#ifndef WIFI_MANAGER_H
+#define WIFI_MANAGER_H
 
-#include "freertos/event_groups.h"
+#include <freertos/event_groups.h>
 
-/* Event group to signal when Wi-Fi is connected */
-extern EventGroupHandle_t wifi_manager_event_group;
-extern const int WIFI_MANAGER_CONNECTED_BIT;
+/** Bit set in event group when Wi-Fi connects. */
+#define WIFI_CONNECTED_BIT (1 << 0)
 
-/**
- * @brief Initializes the Wi-Fi manager's internal resources (e.g., event group).
- * Must be called before wifi_manager_start().
- */
+/** Prototype for optional connect callback. */
+typedef void (*wifi_connected_cb_t)(void);
+
+/** Initialize Wi-Fi manager (must be called before start). */
 void wifi_manager_init(void);
 
 /**
- * @brief Starts the Wi-Fi connection process. This is non-blocking.
+ * Start Wi-Fi (non-blocking).
+ * @param cb Optional callback invoked when connected (can be NULL).
  */
-void wifi_manager_start(void);
+void wifi_manager_start(wifi_connected_cb_t cb);
 
 /**
- * @brief Saves new Wi-Fi credentials and restarts the device.
+ * Retrieve internal Wi-Fi event group handle for waiting.
  */
-void wifi_manager_save_credentials_and_restart(const char* ssid, const char* password);
+EventGroupHandle_t wifi_event_group_handle(void);
 
-#endif /* WIFI_MANAGER_H_ */
+#endif // WIFI_MANAGER_H
