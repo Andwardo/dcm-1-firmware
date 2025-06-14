@@ -64,7 +64,9 @@ $<TARGET_FILE:__idf_touch_element>
 $<TARGET_FILE:__idf_usb>
 $<TARGET_FILE:__idf_wifi_provisioning>
 $<TARGET_FILE:__idf_board_manager>
-$<TARGET_FILE:__idf_esp32-wifi-manager>
+$<TARGET_FILE:__idf_provisioning_manager>
+$<TARGET_FILE:__idf_wifi_manager>
 $<TARGET_FILE:__idf_mqtt_manager>
 $<TARGET_FILE:__idf_app_logic>
 $<TARGET_FILE:__idf_main>
+$<TARGET_FILE:__idf_sensor_manager>

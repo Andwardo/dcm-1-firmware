@@ -64,7 +64,9 @@
 /Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/usb/libusb.a
 /Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/wifi_provisioning/libwifi_provisioning.a
 /Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/board_manager/libboard_manager.a
-/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/esp32-wifi-manager/libesp32-wifi-manager.a
+/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/provisioning_manager/libprovisioning_manager.a
+/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/wifi_manager/libwifi_manager.a
 /Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/mqtt_manager/libmqtt_manager.a
 /Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/app_logic/libapp_logic.a
 /Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/main/libmain.a
+/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/sensor_manager/libsensor_manager.a

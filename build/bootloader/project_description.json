@@ -786,6 +786,18 @@
             "managed_priv_reqs": [],
             "include_dirs": [ "include" ]
         },
+        "esp_vfs_console": {
+            "alias": "idf::esp_vfs_console",
+            "target": "___idf_esp_vfs_console",
+            "prefix": "idf",
+            "dir": "/Users/andrewballard/esp/esp-idf/components/esp_vfs_console",
+            "lib": "__idf_esp_vfs_console",
+            "reqs": [],
+            "priv_reqs": [],
+            "managed_reqs": [],
+            "managed_priv_reqs": [],
+            "include_dirs": []
+        },
         "esp_wifi": {
             "alias": "idf::esp_wifi",
             "target": "___idf_esp_wifi",

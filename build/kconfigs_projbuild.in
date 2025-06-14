@@ -3,3 +3,4 @@ source "/Users/andrewballard/esp/esp-idf/components/esp_app_format/Kconfig.projb
 source "/Users/andrewballard/esp/esp-idf/components/esp_rom/Kconfig.projbuild"
 source "/Users/andrewballard/esp/esp-idf/components/esptool_py/Kconfig.projbuild"
 source "/Users/andrewballard/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+source "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/main/Kconfig.projbuild"

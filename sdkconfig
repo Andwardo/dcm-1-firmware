@@ -1925,6 +1925,26 @@ CONFIG_WIFI_PROV_AUTOSTOP_TIMEOUT=30
 CONFIG_WIFI_PROV_STA_ALL_CHANNEL_SCAN=y
 # CONFIG_WIFI_PROV_STA_FAST_SCAN is not set
 # end of Wi-Fi Provisioning Manager
+
+#
+# MQTT Manager Configuration
+#
+CONFIG_MQTT_URI="mqtts://dev1.pgapi.net:8883"
+# end of MQTT Manager Configuration
+
+#
+# Provisioning Manager Configuration
+#
+
+#
+# Sensor Manager Configuration
+#
+
+#
+# Wi-Fi Manager Configuration
+#
+# CONFIG_WIFI_MANAGER_DEBUG is not set
+# end of Wi-Fi Manager Configuration
 # end of Component config
 
 # CONFIG_IDF_EXPERIMENTAL_FEATURES is not set

@@ -1,80 +1,66 @@
 /*
  * File: components/app_logic/app_logic.c
  *
- * Created on: 13 June 2025 10:00:00
- * Last edited on: 13 June 2025 10:00:00
+ * Created on: 13 June 2025 09:20:00
+ * Last edited on: 13 June 2025 14:00:00
  *
- * Version: 8.0.0
+ * Version: 8.1.0
  *
  * Author: R. Andrew Ballard (c) 2025
  *
  */
 
 #include "app_logic.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_log.h"
+#include "nvs_flash.h"
 #include "board_manager.h"
 #include "wifi_manager.h"
 #include "mqtt_manager.h"
-#include "esp_log.h"
-#include "esp_system.h"
-#include <freertos/event_groups.h>
 
 static const char *TAG = "APP_LOGIC";
+static TaskHandle_t app_logic_task_handle = NULL;
 
-void app_logic_task(void *param)
-{
-    // Allow pins to stabilize
-    vTaskDelay(pdMS_TO_TICKS(100));
+static void handle_factory_reset(void) {
+    ESP_LOGW(TAG, "Factory reset triggered!");
+    ESP_ERROR_CHECK(nvs_flash_erase());
+    esp_restart();
+}
 
-    // Initialize board peripherals
-    esp_err_t err = board_manager_init();
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "board_manager_init failed: %s", esp_err_to_name(err));
-        vTaskDelete(NULL);
-        return;
+static void app_logic_task(void *pvParameters) {
+    ESP_LOGI(TAG, "Application logic task started.");
+
+    // Phase 1: Stabilize Architecture
+    vTaskDelay(pdMS_TO_TICKS(200));
+    ESP_ERROR_CHECK(board_manager_init());
+    if (board_manager_get_factory_reset_button_state()) {
+        handle_factory_reset();
     }
+    ESP_LOGI(TAG, "Architecture stable. Proceeding to networking.");
 
-    // Check factory reset button
-    if (board_manager_is_reset_button_pressed()) {
-        ESP_LOGW(TAG, "Factory reset triggered");
-        board_manager_do_factory_reset();
-        esp_restart();
+    // Phase 2: Networking
+    wifi_manager_start();
+    ESP_LOGI(TAG, "Waiting for Wi-Fi connection...");
+    if (!wifi_manager_wait_for_connect(portMAX_DELAY)) {
+        ESP_LOGE(TAG, "Wi-Fi connect failed; halting.");
+        while (1) { vTaskDelay(portMAX_DELAY); }
     }
-
-    ESP_LOGI(TAG, "Board OK — initializing Wi-Fi");
-
-    // Phase 2: Wi-Fi
-    wifi_manager_init();
-    wifi_manager_start(NULL);
-
-    // Wait indefinitely for Wi-Fi connection
-    xEventGroupWaitBits(
-        wifi_event_group_handle(),
-        WIFI_CONNECTED_BIT,
-        pdFALSE,
-        pdTRUE,
-        portMAX_DELAY
-    );
-    ESP_LOGI(TAG, "Wi-Fi connected — starting MQTT");
+    ESP_LOGI(TAG, "Wi-Fi connected.");
 
     // Phase 3: MQTT
-    mqtt_manager_init();
-    mqtt_manager_start();
+    ESP_LOGI(TAG, "Starting MQTT client.");
+    ESP_ERROR_CHECK(mqtt_manager_start());
 
-    // Wait up to 10s for MQTT connection
-    xEventGroupWaitBits(
-        mqtt_event_group_handle(),
-        MQTT_CONNECTED_BIT,
-        pdFALSE,
-        pdTRUE,
-        pdMS_TO_TICKS(10000)
-    );
-    ESP_LOGI(TAG, "MQTT connected — entering sensor loop");
-
-    // Sensor read and publish loop
-    while (true) {
-        bool power, water, pads;
-        board_manager_read_led_states(&power, &water, &pads);
-        mqtt_manager_publish_sensor_state(power, water, pads);
-        vTaskDelay(pdMS_TO_TICKS(60000));
+    // Main loop
+    bool led = false;
+    while (1) {
+        led = !led;
+        board_manager_set_led_state(led);
+        vTaskDelay(pdMS_TO_TICKS(5000));
     }
+}
+
+void app_logic_start(void) {
+    xTaskCreate(app_logic_task, "app_logic_task", 4096, NULL, 5, &app_logic_task_handle);
 }

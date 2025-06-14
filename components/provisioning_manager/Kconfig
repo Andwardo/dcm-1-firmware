@@ -1,0 +1,5 @@
+menu "Provisioning Manager Configuration"
+
+# no user-configurable options yet
+
+endmenu

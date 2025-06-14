@@ -30409,6 +30409,56 @@
                 "id": "component-config-wi-fi-provisioning-manager",
                 "title": "Wi-Fi Provisioning Manager",
                 "type": "menu"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": null,
+                        "id": "MQTT_URI",
+                        "name": "MQTT_URI",
+                        "range": null,
+                        "title": "MQTT Broker URI",
+                        "type": "string"
+                    }
+                ],
+                "depends_on": null,
+                "id": "component-config-mqtt-manager-configuration",
+                "title": "MQTT Manager Configuration",
+                "type": "menu"
+            },
+            {
+                "children": [],
+                "depends_on": null,
+                "id": "component-config-provisioning-manager-configuration",
+                "title": "Provisioning Manager Configuration",
+                "type": "menu"
+            },
+            {
+                "children": [],
+                "depends_on": null,
+                "id": "component-config-sensor-manager-configuration",
+                "title": "Sensor Manager Configuration",
+                "type": "menu"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": null,
+                        "id": "WIFI_MANAGER_DEBUG",
+                        "name": "WIFI_MANAGER_DEBUG",
+                        "range": null,
+                        "title": "Enable Wi-Fi Manager debug logs",
+                        "type": "bool"
+                    }
+                ],
+                "depends_on": null,
+                "id": "component-config-wi-fi-manager-configuration",
+                "title": "Wi-Fi Manager Configuration",
+                "type": "menu"
             }
         ],
         "depends_on": null,

@@ -1,0 +1,10 @@
+/var/folders/cm/3gshp7n927g3k7p06kdwh0t00000gn/T/kconfgen_tmpd4xn09cx:1: warning: ignoring malformed line '// sdkconfig.defaults (updated)'
+CMake Deprecation Warning at /Users/andrewballard/esp/esp-idf/components/mbedtls/mbedtls/CMakeLists.txt:21 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+

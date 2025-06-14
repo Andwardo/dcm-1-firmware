@@ -74,6 +74,7 @@
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/protobuf-c/cmake_install.cmake",
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/protocomm/cmake_install.cmake",
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/esp_local_ctrl/cmake_install.cmake",
+		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/esp_vfs_console/cmake_install.cmake",
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/espcoredump/cmake_install.cmake",
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/wear_levelling/cmake_install.cmake",
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/sdmmc/cmake_install.cmake",
@@ -91,10 +92,12 @@
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/usb/cmake_install.cmake",
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/wifi_provisioning/cmake_install.cmake",
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/board_manager/cmake_install.cmake",
-		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/esp32-wifi-manager/cmake_install.cmake",
+		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/provisioning_manager/cmake_install.cmake",
+		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/wifi_manager/cmake_install.cmake",
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/mqtt_manager/cmake_install.cmake",
 		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/app_logic/cmake_install.cmake",
-		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/main/cmake_install.cmake"
+		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/main/cmake_install.cmake",
+		"/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/sensor_manager/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

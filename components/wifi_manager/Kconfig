@@ -1,0 +1,7 @@
+menu "Wi-Fi Manager Configuration"
+
+config WIFI_MANAGER_DEBUG
+    bool "Enable Wi-Fi Manager debug logs"
+    default n
+
+endmenu

@@ -1,8 +1,9 @@
-# For more information about build system see
-# https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html
-# The following five lines of boilerplate have to be in your project's
-# CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.16)
 
+# bring in the IDF build system
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(main)
+
+set(IDF_TARGET "esp32s3" CACHE STRING "" FORCE)
+
+# name the project — do _not_ list COMPONENTS here
+project(PianoGuard_DCM-1)

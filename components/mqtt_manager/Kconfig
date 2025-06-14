@@ -1,0 +1,7 @@
+menu "MQTT Manager Configuration"
+
+config MQTT_URI
+    string "MQTT Broker URI"
+    default "mqtts://dev1.pgapi.net:8883"
+
+endmenu

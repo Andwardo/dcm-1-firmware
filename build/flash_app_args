@@ -1,2 +1,2 @@
 --flash_mode dio --flash_freq 80m --flash_size 2MB
-0x10000 main.bin
+0x10000 PianoGuard_DCM-1.bin

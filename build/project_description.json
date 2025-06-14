@@ -1,15 +1,15 @@
 {
     "version":            "1.2",
-    "project_name":       "main",
-    "project_version":    "328cd9b-dirty",
+    "project_name":       "PianoGuard_DCM-1",
+    "project_version":    "bd0643d-dirty",
     "project_path":       "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1",
     "idf_path":           "/Users/andrewballard/esp/esp-idf",
     "build_dir":          "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build",
     "config_file":        "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/sdkconfig",
-    "config_defaults":    "",
+    "config_defaults":    "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/sdkconfig.defaults",
     "bootloader_elf":     "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/bootloader/bootloader.elf",
-    "app_elf":            "main.elf",
-    "app_bin":            "main.bin",
+    "app_elf":            "PianoGuard_DCM-1.elf",
+    "app_bin":            "PianoGuard_DCM-1.bin",
     "build_type":         "flash_app",
     "git_revision":       "v5.2.5-801-g58d15fd208-dirty",
     "target":             "esp32s3",
@@ -21,12 +21,12 @@
     "monitor_toolprefix": "xtensa-esp32s3-elf-",
     "c_compiler":         "/Users/andrewballard/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc",
     "config_environment" : {
-        "COMPONENT_KCONFIGS" : "/Users/andrewballard/esp/esp-idf/components/app_trace/Kconfig;/Users/andrewballard/esp/esp-idf/components/bt/Kconfig;/Users/andrewballard/esp/esp-idf/components/driver/Kconfig;/Users/andrewballard/esp/esp-idf/components/efuse/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp-tls/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_adc/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_coex/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_common/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_eth/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_event/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_gdbstub/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_hid/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_http_client/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_http_server/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_https_ota/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_https_server/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_hw_support/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_lcd/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_netif/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_partition/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_phy/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_pm/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_psram/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_ringbuf/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_system/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_timer/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_wifi/Kconfig;/Users/andrewballard/esp/esp-idf/components/espcoredump/Kconfig;/Users/andrewballard/esp/esp-idf/components/fatfs/Kconfig;/Users/andrewballard/esp/esp-idf/components/freertos/Kconfig;/Users/andrewballard/esp/esp-idf/components/hal/Kconfig;/Users/andrewballard/esp/esp-idf/components/heap/Kconfig;/Users/andrewballard/esp/esp-idf/components/ieee802154/Kconfig;/Users/andrewballard/esp/esp-idf/components/log/Kconfig;/Users/andrewballard/esp/esp-idf/components/lwip/Kconfig;/Users/andrewballard/esp/esp-idf/components/mbedtls/Kconfig;/Users/andrewballard/esp/esp-idf/components/mqtt/esp-mqtt/Kconfig;/Users/andrewballard/esp/esp-idf/components/newlib/Kconfig;/Users/andrewballard/esp/esp-idf/components/nvs_flash/Kconfig;/Users/andrewballard/esp/esp-idf/components/nvs_sec_provider/Kconfig;/Users/andrewballard/esp/esp-idf/components/openthread/Kconfig;/Users/andrewballard/esp/esp-idf/components/protocomm/Kconfig;/Users/andrewballard/esp/esp-idf/components/pthread/Kconfig;/Users/andrewballard/esp/esp-idf/components/soc/Kconfig;/Users/andrewballard/esp/esp-idf/components/spi_flash/Kconfig;/Users/andrewballard/esp/esp-idf/components/spiffs/Kconfig;/Users/andrewballard/esp/esp-idf/components/tcp_transport/Kconfig;/Users/andrewballard/esp/esp-idf/components/ulp/Kconfig;/Users/andrewballard/esp/esp-idf/components/unity/Kconfig;/Users/andrewballard/esp/esp-idf/components/usb/Kconfig;/Users/andrewballard/esp/esp-idf/components/vfs/Kconfig;/Users/andrewballard/esp/esp-idf/components/wear_levelling/Kconfig;/Users/andrewballard/esp/esp-idf/components/wifi_provisioning/Kconfig",
-        "COMPONENT_KCONFIGS_PROJBUILD" : "/Users/andrewballard/esp/esp-idf/components/bootloader/Kconfig.projbuild;/Users/andrewballard/esp/esp-idf/components/esp_app_format/Kconfig.projbuild;/Users/andrewballard/esp/esp-idf/components/esp_rom/Kconfig.projbuild;/Users/andrewballard/esp/esp-idf/components/esptool_py/Kconfig.projbuild;/Users/andrewballard/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+        "COMPONENT_KCONFIGS" : "/Users/andrewballard/esp/esp-idf/components/app_trace/Kconfig;/Users/andrewballard/esp/esp-idf/components/bt/Kconfig;/Users/andrewballard/esp/esp-idf/components/driver/Kconfig;/Users/andrewballard/esp/esp-idf/components/efuse/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp-tls/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_adc/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_coex/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_common/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_eth/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_event/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_gdbstub/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_hid/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_http_client/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_http_server/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_https_ota/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_https_server/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_hw_support/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_lcd/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_netif/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_partition/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_phy/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_pm/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_psram/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_ringbuf/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_system/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_timer/Kconfig;/Users/andrewballard/esp/esp-idf/components/esp_wifi/Kconfig;/Users/andrewballard/esp/esp-idf/components/espcoredump/Kconfig;/Users/andrewballard/esp/esp-idf/components/fatfs/Kconfig;/Users/andrewballard/esp/esp-idf/components/freertos/Kconfig;/Users/andrewballard/esp/esp-idf/components/hal/Kconfig;/Users/andrewballard/esp/esp-idf/components/heap/Kconfig;/Users/andrewballard/esp/esp-idf/components/ieee802154/Kconfig;/Users/andrewballard/esp/esp-idf/components/log/Kconfig;/Users/andrewballard/esp/esp-idf/components/lwip/Kconfig;/Users/andrewballard/esp/esp-idf/components/mbedtls/Kconfig;/Users/andrewballard/esp/esp-idf/components/mqtt/esp-mqtt/Kconfig;/Users/andrewballard/esp/esp-idf/components/newlib/Kconfig;/Users/andrewballard/esp/esp-idf/components/nvs_flash/Kconfig;/Users/andrewballard/esp/esp-idf/components/nvs_sec_provider/Kconfig;/Users/andrewballard/esp/esp-idf/components/openthread/Kconfig;/Users/andrewballard/esp/esp-idf/components/protocomm/Kconfig;/Users/andrewballard/esp/esp-idf/components/pthread/Kconfig;/Users/andrewballard/esp/esp-idf/components/soc/Kconfig;/Users/andrewballard/esp/esp-idf/components/spi_flash/Kconfig;/Users/andrewballard/esp/esp-idf/components/spiffs/Kconfig;/Users/andrewballard/esp/esp-idf/components/tcp_transport/Kconfig;/Users/andrewballard/esp/esp-idf/components/ulp/Kconfig;/Users/andrewballard/esp/esp-idf/components/unity/Kconfig;/Users/andrewballard/esp/esp-idf/components/usb/Kconfig;/Users/andrewballard/esp/esp-idf/components/vfs/Kconfig;/Users/andrewballard/esp/esp-idf/components/wear_levelling/Kconfig;/Users/andrewballard/esp/esp-idf/components/wifi_provisioning/Kconfig;/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/mqtt_manager/Kconfig;/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/provisioning_manager/Kconfig;/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/sensor_manager/Kconfig;/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/wifi_manager/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "/Users/andrewballard/esp/esp-idf/components/bootloader/Kconfig.projbuild;/Users/andrewballard/esp/esp-idf/components/esp_app_format/Kconfig.projbuild;/Users/andrewballard/esp/esp-idf/components/esp_rom/Kconfig.projbuild;/Users/andrewballard/esp/esp-idf/components/esptool_py/Kconfig.projbuild;/Users/andrewballard/esp/esp-idf/components/partition_table/Kconfig.projbuild;/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/main/Kconfig.projbuild"
     },
     "common_component_reqs": [ "cxx", "newlib", "freertos", "esp_hw_support", "heap", "log", "soc", "hal", "esp_rom", "esp_common", "esp_system", "xtensa" ],
-    "build_components" : [ "app_logic", "app_trace", "app_update", "board_manager", "bootloader", "bootloader_support", "bt", "cmock", "console", "cxx", "driver", "efuse", "esp-tls", "esp32-wifi-manager", "esp_adc", "esp_app_format", "esp_bootloader_format", "esp_coex", "esp_common", "esp_eth", "esp_event", "esp_gdbstub", "esp_hid", "esp_http_client", "esp_http_server", "esp_https_ota", "esp_https_server", "esp_hw_support", "esp_lcd", "esp_local_ctrl", "esp_mm", "esp_netif", "esp_netif_stack", "esp_partition", "esp_phy", "esp_pm", "esp_psram", "esp_ringbuf", "esp_rom", "esp_system", "esp_timer", "esp_wifi", "espcoredump", "esptool_py", "fatfs", "freertos", "hal", "heap", "http_parser", "idf_test", "ieee802154", "json", "log", "lwip", "main", "mbedtls", "mqtt", "mqtt_manager", "newlib", "nvs_flash", "nvs_sec_provider", "openthread", "partition_table", "perfmon", "protobuf-c", "protocomm", "pthread", "sdmmc", "soc", "spi_flash", "spiffs", "tcp_transport", "touch_element", "ulp", "unity", "usb", "vfs", "wear_levelling", "wifi_provisioning", "wpa_supplicant", "xtensa", "" ],
-    "build_component_paths" : [ "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/app_logic", "/Users/andrewballard/esp/esp-idf/components/app_trace", "/Users/andrewballard/esp/esp-idf/components/app_update", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/board_manager", "/Users/andrewballard/esp/esp-idf/components/bootloader", "/Users/andrewballard/esp/esp-idf/components/bootloader_support", "/Users/andrewballard/esp/esp-idf/components/bt", "/Users/andrewballard/esp/esp-idf/components/cmock", "/Users/andrewballard/esp/esp-idf/components/console", "/Users/andrewballard/esp/esp-idf/components/cxx", "/Users/andrewballard/esp/esp-idf/components/driver", "/Users/andrewballard/esp/esp-idf/components/efuse", "/Users/andrewballard/esp/esp-idf/components/esp-tls", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/esp32-wifi-manager", "/Users/andrewballard/esp/esp-idf/components/esp_adc", "/Users/andrewballard/esp/esp-idf/components/esp_app_format", "/Users/andrewballard/esp/esp-idf/components/esp_bootloader_format", "/Users/andrewballard/esp/esp-idf/components/esp_coex", "/Users/andrewballard/esp/esp-idf/components/esp_common", "/Users/andrewballard/esp/esp-idf/components/esp_eth", "/Users/andrewballard/esp/esp-idf/components/esp_event", "/Users/andrewballard/esp/esp-idf/components/esp_gdbstub", "/Users/andrewballard/esp/esp-idf/components/esp_hid", "/Users/andrewballard/esp/esp-idf/components/esp_http_client", "/Users/andrewballard/esp/esp-idf/components/esp_http_server", "/Users/andrewballard/esp/esp-idf/components/esp_https_ota", "/Users/andrewballard/esp/esp-idf/components/esp_https_server", "/Users/andrewballard/esp/esp-idf/components/esp_hw_support", "/Users/andrewballard/esp/esp-idf/components/esp_lcd", "/Users/andrewballard/esp/esp-idf/components/esp_local_ctrl", "/Users/andrewballard/esp/esp-idf/components/esp_mm", "/Users/andrewballard/esp/esp-idf/components/esp_netif", "/Users/andrewballard/esp/esp-idf/components/esp_netif_stack", "/Users/andrewballard/esp/esp-idf/components/esp_partition", "/Users/andrewballard/esp/esp-idf/components/esp_phy", "/Users/andrewballard/esp/esp-idf/components/esp_pm", "/Users/andrewballard/esp/esp-idf/components/esp_psram", "/Users/andrewballard/esp/esp-idf/components/esp_ringbuf", "/Users/andrewballard/esp/esp-idf/components/esp_rom", "/Users/andrewballard/esp/esp-idf/components/esp_system", "/Users/andrewballard/esp/esp-idf/components/esp_timer", "/Users/andrewballard/esp/esp-idf/components/esp_wifi", "/Users/andrewballard/esp/esp-idf/components/espcoredump", "/Users/andrewballard/esp/esp-idf/components/esptool_py", "/Users/andrewballard/esp/esp-idf/components/fatfs", "/Users/andrewballard/esp/esp-idf/components/freertos", "/Users/andrewballard/esp/esp-idf/components/hal", "/Users/andrewballard/esp/esp-idf/components/heap", "/Users/andrewballard/esp/esp-idf/components/http_parser", "/Users/andrewballard/esp/esp-idf/components/idf_test", "/Users/andrewballard/esp/esp-idf/components/ieee802154", "/Users/andrewballard/esp/esp-idf/components/json", "/Users/andrewballard/esp/esp-idf/components/log", "/Users/andrewballard/esp/esp-idf/components/lwip", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/main", "/Users/andrewballard/esp/esp-idf/components/mbedtls", "/Users/andrewballard/esp/esp-idf/components/mqtt", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/mqtt_manager", "/Users/andrewballard/esp/esp-idf/components/newlib", "/Users/andrewballard/esp/esp-idf/components/nvs_flash", "/Users/andrewballard/esp/esp-idf/components/nvs_sec_provider", "/Users/andrewballard/esp/esp-idf/components/openthread", "/Users/andrewballard/esp/esp-idf/components/partition_table", "/Users/andrewballard/esp/esp-idf/components/perfmon", "/Users/andrewballard/esp/esp-idf/components/protobuf-c", "/Users/andrewballard/esp/esp-idf/components/protocomm", "/Users/andrewballard/esp/esp-idf/components/pthread", "/Users/andrewballard/esp/esp-idf/components/sdmmc", "/Users/andrewballard/esp/esp-idf/components/soc", "/Users/andrewballard/esp/esp-idf/components/spi_flash", "/Users/andrewballard/esp/esp-idf/components/spiffs", "/Users/andrewballard/esp/esp-idf/components/tcp_transport", "/Users/andrewballard/esp/esp-idf/components/touch_element", "/Users/andrewballard/esp/esp-idf/components/ulp", "/Users/andrewballard/esp/esp-idf/components/unity", "/Users/andrewballard/esp/esp-idf/components/usb", "/Users/andrewballard/esp/esp-idf/components/vfs", "/Users/andrewballard/esp/esp-idf/components/wear_levelling", "/Users/andrewballard/esp/esp-idf/components/wifi_provisioning", "/Users/andrewballard/esp/esp-idf/components/wpa_supplicant", "/Users/andrewballard/esp/esp-idf/components/xtensa", "" ],
+    "build_components" : [ "app_logic", "app_trace", "app_update", "board_manager", "bootloader", "bootloader_support", "bt", "cmock", "console", "cxx", "driver", "efuse", "esp-tls", "esp_adc", "esp_app_format", "esp_bootloader_format", "esp_coex", "esp_common", "esp_eth", "esp_event", "esp_gdbstub", "esp_hid", "esp_http_client", "esp_http_server", "esp_https_ota", "esp_https_server", "esp_hw_support", "esp_lcd", "esp_local_ctrl", "esp_mm", "esp_netif", "esp_netif_stack", "esp_partition", "esp_phy", "esp_pm", "esp_psram", "esp_ringbuf", "esp_rom", "esp_system", "esp_timer", "esp_vfs_console", "esp_wifi", "espcoredump", "esptool_py", "fatfs", "freertos", "hal", "heap", "http_parser", "idf_test", "ieee802154", "json", "log", "lwip", "main", "mbedtls", "mqtt", "mqtt_manager", "newlib", "nvs_flash", "nvs_sec_provider", "openthread", "partition_table", "perfmon", "protobuf-c", "protocomm", "provisioning_manager", "pthread", "sdmmc", "sensor_manager", "soc", "spi_flash", "spiffs", "tcp_transport", "touch_element", "ulp", "unity", "usb", "vfs", "wear_levelling", "wifi_manager", "wifi_provisioning", "wpa_supplicant", "xtensa", "" ],
+    "build_component_paths" : [ "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/app_logic", "/Users/andrewballard/esp/esp-idf/components/app_trace", "/Users/andrewballard/esp/esp-idf/components/app_update", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/board_manager", "/Users/andrewballard/esp/esp-idf/components/bootloader", "/Users/andrewballard/esp/esp-idf/components/bootloader_support", "/Users/andrewballard/esp/esp-idf/components/bt", "/Users/andrewballard/esp/esp-idf/components/cmock", "/Users/andrewballard/esp/esp-idf/components/console", "/Users/andrewballard/esp/esp-idf/components/cxx", "/Users/andrewballard/esp/esp-idf/components/driver", "/Users/andrewballard/esp/esp-idf/components/efuse", "/Users/andrewballard/esp/esp-idf/components/esp-tls", "/Users/andrewballard/esp/esp-idf/components/esp_adc", "/Users/andrewballard/esp/esp-idf/components/esp_app_format", "/Users/andrewballard/esp/esp-idf/components/esp_bootloader_format", "/Users/andrewballard/esp/esp-idf/components/esp_coex", "/Users/andrewballard/esp/esp-idf/components/esp_common", "/Users/andrewballard/esp/esp-idf/components/esp_eth", "/Users/andrewballard/esp/esp-idf/components/esp_event", "/Users/andrewballard/esp/esp-idf/components/esp_gdbstub", "/Users/andrewballard/esp/esp-idf/components/esp_hid", "/Users/andrewballard/esp/esp-idf/components/esp_http_client", "/Users/andrewballard/esp/esp-idf/components/esp_http_server", "/Users/andrewballard/esp/esp-idf/components/esp_https_ota", "/Users/andrewballard/esp/esp-idf/components/esp_https_server", "/Users/andrewballard/esp/esp-idf/components/esp_hw_support", "/Users/andrewballard/esp/esp-idf/components/esp_lcd", "/Users/andrewballard/esp/esp-idf/components/esp_local_ctrl", "/Users/andrewballard/esp/esp-idf/components/esp_mm", "/Users/andrewballard/esp/esp-idf/components/esp_netif", "/Users/andrewballard/esp/esp-idf/components/esp_netif_stack", "/Users/andrewballard/esp/esp-idf/components/esp_partition", "/Users/andrewballard/esp/esp-idf/components/esp_phy", "/Users/andrewballard/esp/esp-idf/components/esp_pm", "/Users/andrewballard/esp/esp-idf/components/esp_psram", "/Users/andrewballard/esp/esp-idf/components/esp_ringbuf", "/Users/andrewballard/esp/esp-idf/components/esp_rom", "/Users/andrewballard/esp/esp-idf/components/esp_system", "/Users/andrewballard/esp/esp-idf/components/esp_timer", "/Users/andrewballard/esp/esp-idf/components/esp_vfs_console", "/Users/andrewballard/esp/esp-idf/components/esp_wifi", "/Users/andrewballard/esp/esp-idf/components/espcoredump", "/Users/andrewballard/esp/esp-idf/components/esptool_py", "/Users/andrewballard/esp/esp-idf/components/fatfs", "/Users/andrewballard/esp/esp-idf/components/freertos", "/Users/andrewballard/esp/esp-idf/components/hal", "/Users/andrewballard/esp/esp-idf/components/heap", "/Users/andrewballard/esp/esp-idf/components/http_parser", "/Users/andrewballard/esp/esp-idf/components/idf_test", "/Users/andrewballard/esp/esp-idf/components/ieee802154", "/Users/andrewballard/esp/esp-idf/components/json", "/Users/andrewballard/esp/esp-idf/components/log", "/Users/andrewballard/esp/esp-idf/components/lwip", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/main", "/Users/andrewballard/esp/esp-idf/components/mbedtls", "/Users/andrewballard/esp/esp-idf/components/mqtt", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/mqtt_manager", "/Users/andrewballard/esp/esp-idf/components/newlib", "/Users/andrewballard/esp/esp-idf/components/nvs_flash", "/Users/andrewballard/esp/esp-idf/components/nvs_sec_provider", "/Users/andrewballard/esp/esp-idf/components/openthread", "/Users/andrewballard/esp/esp-idf/components/partition_table", "/Users/andrewballard/esp/esp-idf/components/perfmon", "/Users/andrewballard/esp/esp-idf/components/protobuf-c", "/Users/andrewballard/esp/esp-idf/components/protocomm", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/provisioning_manager", "/Users/andrewballard/esp/esp-idf/components/pthread", "/Users/andrewballard/esp/esp-idf/components/sdmmc", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/sensor_manager", "/Users/andrewballard/esp/esp-idf/components/soc", "/Users/andrewballard/esp/esp-idf/components/spi_flash", "/Users/andrewballard/esp/esp-idf/components/spiffs", "/Users/andrewballard/esp/esp-idf/components/tcp_transport", "/Users/andrewballard/esp/esp-idf/components/touch_element", "/Users/andrewballard/esp/esp-idf/components/ulp", "/Users/andrewballard/esp/esp-idf/components/unity", "/Users/andrewballard/esp/esp-idf/components/usb", "/Users/andrewballard/esp/esp-idf/components/vfs", "/Users/andrewballard/esp/esp-idf/components/wear_levelling", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/wifi_manager", "/Users/andrewballard/esp/esp-idf/components/wifi_provisioning", "/Users/andrewballard/esp/esp-idf/components/wpa_supplicant", "/Users/andrewballard/esp/esp-idf/components/xtensa", "" ],
     "build_component_info" : {
         "app_logic": {
             "alias": "idf::app_logic",
@@ -35,13 +35,13 @@
             "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/app_logic",
             "type": "LIBRARY",
             "lib": "__idf_app_logic",
-            "reqs": [ "board_manager", "esp32-wifi-manager", "mqtt_manager", "nvs_flash" ],
+            "reqs": [ "board_manager", "wifi_manager", "mqtt_manager", "nvs_flash" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/app_logic/libapp_logic.a",
             "sources": [ "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/app_logic/app_logic.c" ],
-            "include_dirs": [ "include" ]
+            "include_dirs": [ "." ]
         },
         "app_trace": {
             "alias": "idf::app_trace",
@@ -80,13 +80,13 @@
             "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/board_manager",
             "type": "LIBRARY",
             "lib": "__idf_board_manager",
-            "reqs": [ "driver" ],
-            "priv_reqs": [],
+            "reqs": [],
+            "priv_reqs": [ "driver" ],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/board_manager/libboard_manager.a",
             "sources": [ "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/board_manager/board_manager.c" ],
-            "include_dirs": [ "include" ]
+            "include_dirs": [ "." ]
         },
         "bootloader": {
             "alias": "idf::bootloader",
@@ -222,21 +222,6 @@
             "file": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/esp-tls/libesp-tls.a",
             "sources": [ "/Users/andrewballard/esp/esp-idf/components/esp-tls/esp_tls.c", "/Users/andrewballard/esp/esp-idf/components/esp-tls/esp-tls-crypto/esp_tls_crypto.c", "/Users/andrewballard/esp/esp-idf/components/esp-tls/esp_tls_error_capture.c", "/Users/andrewballard/esp/esp-idf/components/esp-tls/esp_tls_platform_port.c", "/Users/andrewballard/esp/esp-idf/components/esp-tls/esp_tls_mbedtls.c" ],
             "include_dirs": [ "/Users/andrewballard/esp/esp-idf/components/esp-tls", "esp-tls-crypto" ]
-        },
-        "esp32-wifi-manager": {
-            "alias": "idf::esp32-wifi-manager",
-            "target": "___idf_esp32-wifi-manager",
-            "prefix": "idf",
-            "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/esp32-wifi-manager",
-            "type": "LIBRARY",
-            "lib": "__idf_esp32-wifi-manager",
-            "reqs": [ "nvs_flash", "esp_wifi", "esp_http_server", "esp_netif", "esp_event", "json" ],
-            "priv_reqs": [],
-            "managed_reqs": [],
-            "managed_priv_reqs": [],
-            "file": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/esp32-wifi-manager/libesp32-wifi-manager.a",
-            "sources": [ "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/esp32-wifi-manager/wifi_manager.c", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/esp32-wifi-manager/http_app.c", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/style.css.S", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/code.js.S", "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/index.html.S" ],
-            "include_dirs": [ "include" ]
         },
         "esp_adc": {
             "alias": "idf::esp_adc",
@@ -643,6 +628,21 @@
             "sources": [ "/Users/andrewballard/esp/esp-idf/components/esp_timer/src/esp_timer.c", "/Users/andrewballard/esp/esp-idf/components/esp_timer/src/ets_timer_legacy.c", "/Users/andrewballard/esp/esp-idf/components/esp_timer/src/system_time.c", "/Users/andrewballard/esp/esp-idf/components/esp_timer/src/esp_timer_impl_common.c", "/Users/andrewballard/esp/esp-idf/components/esp_timer/src/esp_timer_impl_systimer.c" ],
             "include_dirs": [ "include" ]
         },
+        "esp_vfs_console": {
+            "alias": "idf::esp_vfs_console",
+            "target": "___idf_esp_vfs_console",
+            "prefix": "idf",
+            "dir": "/Users/andrewballard/esp/esp-idf/components/esp_vfs_console",
+            "type": "CONFIG_ONLY",
+            "lib": "__idf_esp_vfs_console",
+            "reqs": [],
+            "priv_reqs": [],
+            "managed_reqs": [],
+            "managed_priv_reqs": [],
+            "file": "",
+            "sources": [],
+            "include_dirs": []
+        },
         "esp_wifi": {
             "alias": "idf::esp_wifi",
             "target": "___idf_esp_wifi",
@@ -845,7 +845,7 @@
             "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/main",
             "type": "LIBRARY",
             "lib": "__idf_main",
-            "reqs": [ "nvs_flash", "app_logic" ],
+            "reqs": [ "app_logic" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
@@ -890,13 +890,13 @@
             "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/mqtt_manager",
             "type": "LIBRARY",
             "lib": "__idf_mqtt_manager",
-            "reqs": [ "mqtt", "esp-tls" ],
-            "priv_reqs": [],
+            "reqs": [],
+            "priv_reqs": [ "mqtt", "esp_event" ],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/mqtt_manager/libmqtt_manager.a",
             "sources": [ "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/mqtt_manager/mqtt_manager.c" ],
-            "include_dirs": [ "include" ]
+            "include_dirs": [ "." ]
         },
         "newlib": {
             "alias": "idf::newlib",
@@ -1018,6 +1018,21 @@
             "sources": [ "/Users/andrewballard/esp/esp-idf/components/protocomm/src/common/protocomm.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/proto-c/constants.pb-c.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/proto-c/sec0.pb-c.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/proto-c/sec1.pb-c.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/proto-c/sec2.pb-c.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/proto-c/session.pb-c.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/src/transports/protocomm_console.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/src/transports/protocomm_httpd.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/src/security/security0.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/src/security/security1.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/src/security/security2.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/src/crypto/srp6a/esp_srp.c", "/Users/andrewballard/esp/esp-idf/components/protocomm/src/crypto/srp6a/esp_srp_mpi.c" ],
             "include_dirs": [ "include/common", "include/security", "include/transports", "include/crypto/srp6a", "proto-c" ]
         },
+        "provisioning_manager": {
+            "alias": "idf::provisioning_manager",
+            "target": "___idf_provisioning_manager",
+            "prefix": "idf",
+            "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/provisioning_manager",
+            "type": "LIBRARY",
+            "lib": "__idf_provisioning_manager",
+            "reqs": [],
+            "priv_reqs": [ "wifi_provisioning", "protocomm", "esp_event" ],
+            "managed_reqs": [],
+            "managed_priv_reqs": [],
+            "file": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/provisioning_manager/libprovisioning_manager.a",
+            "sources": [ "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/provisioning_manager/provisioning_manager.c" ],
+            "include_dirs": [ "." ]
+        },
         "pthread": {
             "alias": "idf::pthread",
             "target": "___idf_pthread",
@@ -1047,6 +1062,21 @@
             "file": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/sdmmc/libsdmmc.a",
             "sources": [ "/Users/andrewballard/esp/esp-idf/components/sdmmc/sdmmc_cmd.c", "/Users/andrewballard/esp/esp-idf/components/sdmmc/sdmmc_common.c", "/Users/andrewballard/esp/esp-idf/components/sdmmc/sdmmc_init.c", "/Users/andrewballard/esp/esp-idf/components/sdmmc/sdmmc_io.c", "/Users/andrewballard/esp/esp-idf/components/sdmmc/sdmmc_mmc.c", "/Users/andrewballard/esp/esp-idf/components/sdmmc/sdmmc_sd.c" ],
             "include_dirs": [ "include" ]
+        },
+        "sensor_manager": {
+            "alias": "idf::sensor_manager",
+            "target": "___idf_sensor_manager",
+            "prefix": "idf",
+            "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/sensor_manager",
+            "type": "LIBRARY",
+            "lib": "__idf_sensor_manager",
+            "reqs": [],
+            "priv_reqs": [],
+            "managed_reqs": [],
+            "managed_priv_reqs": [],
+            "file": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/sensor_manager/libsensor_manager.a",
+            "sources": [ "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/sensor_manager/sensor_manager.c" ],
+            "include_dirs": [ "." ]
         },
         "soc": {
             "alias": "idf::soc",
@@ -1197,6 +1227,21 @@
             "file": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/wear_levelling/libwear_levelling.a",
             "sources": [ "/Users/andrewballard/esp/esp-idf/components/wear_levelling/Partition.cpp", "/Users/andrewballard/esp/esp-idf/components/wear_levelling/SPI_Flash.cpp", "/Users/andrewballard/esp/esp-idf/components/wear_levelling/WL_Ext_Perf.cpp", "/Users/andrewballard/esp/esp-idf/components/wear_levelling/WL_Ext_Safe.cpp", "/Users/andrewballard/esp/esp-idf/components/wear_levelling/WL_Flash.cpp", "/Users/andrewballard/esp/esp-idf/components/wear_levelling/crc32.cpp", "/Users/andrewballard/esp/esp-idf/components/wear_levelling/wear_levelling.cpp" ],
             "include_dirs": [ "include" ]
+        },
+        "wifi_manager": {
+            "alias": "idf::wifi_manager",
+            "target": "___idf_wifi_manager",
+            "prefix": "idf",
+            "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/wifi_manager",
+            "type": "LIBRARY",
+            "lib": "__idf_wifi_manager",
+            "reqs": [],
+            "priv_reqs": [ "provisioning_manager", "wifi_provisioning", "esp_event" ],
+            "managed_reqs": [],
+            "managed_priv_reqs": [],
+            "file": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/esp-idf/wifi_manager/libwifi_manager.a",
+            "sources": [ "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/wifi_manager/wifi_manager.c" ],
+            "include_dirs": [ "." ]
         },
         "wifi_provisioning": {
             "alias": "idf::wifi_provisioning",
@@ -1701,6 +1746,18 @@
             "managed_priv_reqs": [],
             "include_dirs": [ "include" ]
         },
+        "esp_vfs_console": {
+            "alias": "idf::esp_vfs_console",
+            "target": "___idf_esp_vfs_console",
+            "prefix": "idf",
+            "dir": "/Users/andrewballard/esp/esp-idf/components/esp_vfs_console",
+            "lib": "__idf_esp_vfs_console",
+            "reqs": [],
+            "priv_reqs": [],
+            "managed_reqs": [],
+            "managed_priv_reqs": [],
+            "include_dirs": []
+        },
         "esp_wifi": {
             "alias": "idf::esp_wifi",
             "target": "___idf_esp_wifi",
@@ -2187,7 +2244,7 @@
             "prefix": "idf",
             "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/main",
             "lib": "__idf_main",
-            "reqs": [ "nvs_flash", "app_logic" ],
+            "reqs": [ "app_logic" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
@@ -2199,11 +2256,11 @@
             "prefix": "idf",
             "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/app_logic",
             "lib": "__idf_app_logic",
-            "reqs": [ "board_manager", "esp32-wifi-manager", "mqtt_manager", "nvs_flash" ],
+            "reqs": [ "board_manager", "wifi_manager", "mqtt_manager", "nvs_flash" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
-            "include_dirs": [ "include" ]
+            "include_dirs": [ "." ]
         },
         "board_manager": {
             "alias": "idf::board_manager",
@@ -2211,23 +2268,11 @@
             "prefix": "idf",
             "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/board_manager",
             "lib": "__idf_board_manager",
-            "reqs": [ "driver" ],
-            "priv_reqs": [],
+            "reqs": [],
+            "priv_reqs": [ "driver" ],
             "managed_reqs": [],
             "managed_priv_reqs": [],
-            "include_dirs": [ "include" ]
-        },
-        "esp32-wifi-manager": {
-            "alias": "idf::esp32-wifi-manager",
-            "target": "___idf_esp32-wifi-manager",
-            "prefix": "idf",
-            "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/esp32-wifi-manager",
-            "lib": "__idf_esp32-wifi-manager",
-            "reqs": [ "nvs_flash", "esp_wifi", "esp_http_server", "esp_netif", "esp_event", "json" ],
-            "priv_reqs": [],
-            "managed_reqs": [],
-            "managed_priv_reqs": [],
-            "include_dirs": [ "include" ]
+            "include_dirs": [ "." ]
         },
         "mqtt_manager": {
             "alias": "idf::mqtt_manager",
@@ -2235,11 +2280,47 @@
             "prefix": "idf",
             "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/mqtt_manager",
             "lib": "__idf_mqtt_manager",
-            "reqs": [ "mqtt", "esp-tls" ],
+            "reqs": [],
+            "priv_reqs": [ "mqtt", "esp_event" ],
+            "managed_reqs": [],
+            "managed_priv_reqs": [],
+            "include_dirs": [ "." ]
+        },
+        "provisioning_manager": {
+            "alias": "idf::provisioning_manager",
+            "target": "___idf_provisioning_manager",
+            "prefix": "idf",
+            "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/provisioning_manager",
+            "lib": "__idf_provisioning_manager",
+            "reqs": [],
+            "priv_reqs": [ "wifi_provisioning", "protocomm", "esp_event" ],
+            "managed_reqs": [],
+            "managed_priv_reqs": [],
+            "include_dirs": [ "." ]
+        },
+        "sensor_manager": {
+            "alias": "idf::sensor_manager",
+            "target": "___idf_sensor_manager",
+            "prefix": "idf",
+            "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/sensor_manager",
+            "lib": "__idf_sensor_manager",
+            "reqs": [],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
-            "include_dirs": [ "include" ]
+            "include_dirs": [ "." ]
+        },
+        "wifi_manager": {
+            "alias": "idf::wifi_manager",
+            "target": "___idf_wifi_manager",
+            "prefix": "idf",
+            "dir": "/Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/components/wifi_manager",
+            "lib": "__idf_wifi_manager",
+            "reqs": [],
+            "priv_reqs": [ "provisioning_manager", "wifi_provisioning", "esp_event" ],
+            "managed_reqs": [],
+            "managed_priv_reqs": [],
+            "include_dirs": [ "." ]
         }
     },
     "debug_prefix_map_gdbinit": "",

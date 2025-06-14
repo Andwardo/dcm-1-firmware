@@ -17,4 +17,4 @@ set confirm off
 set confirm on
 
 # Load application symbols
-file /Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/main.elf
+file /Users/andrewballard/eclipse-workspace/PianoGuard_DCM-1/build/PianoGuard_DCM-1.elf
