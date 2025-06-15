@@ -19,11 +19,18 @@ void mqtt_manager_init(void)
     esp_mqtt_client_config_t cfg = {
         .broker = {
             .address = {
-                .uri = CONFIG_MQTT_BROKER_URI
-            }
-        }
-        // You can also set .credentials.username / .credentials.authentication if needed
+                .uri = CONFIG_MQTT_BROKER_URI,
+            },
+        },
+        // if you need username/password:
+        // .credentials = {
+        //     .username = CONFIG_MQTT_USERNAME,
+        //     .authentication = {
+        //         .password = CONFIG_MQTT_PASSWORD,
+        //     },
+        // },
     };
+
     s_client = esp_mqtt_client_init(&cfg);
     ESP_LOGI(TAG, "Initialized MQTT client");
 }
