@@ -514,6 +514,20 @@ CONFIG_PARTITION_TABLE_MD5=y
 # end of Partition Table
 
 #
+# WiFi Manager Configuration
+#
+CONFIG_WIFI_SSID="YourSSID"
+CONFIG_WIFI_PASSWORD="YourPassword"
+# end of WiFi Manager Configuration
+
+#
+# MQTT Manager Configuration
+#
+CONFIG_MQTT_URI="mqtts://45.56.69.50"
+CONFIG_MQTT_TOPIC="pianoguard/status"
+# end of MQTT Manager Configuration
+
+#
 # Compiler options
 #
 CONFIG_COMPILER_OPTIMIZATION_DEBUG=y
@@ -1925,6 +1939,12 @@ CONFIG_WIFI_PROV_AUTOSTOP_TIMEOUT=30
 CONFIG_WIFI_PROV_STA_ALL_CHANNEL_SCAN=y
 # CONFIG_WIFI_PROV_STA_FAST_SCAN is not set
 # end of Wi-Fi Provisioning Manager
+
+#
+# MQTT Manager Configuration
+#
+CONFIG_MQTT_BROKER_URI="mqtts://your-broker.example.com"
+# end of MQTT Manager Configuration
 # end of Component config
 
 # CONFIG_IDF_EXPERIMENTAL_FEATURES is not set

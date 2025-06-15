@@ -1,0 +1,15 @@
+menu "MQTT Manager Configuration"
+
+config MQTT_BROKER_URI
+    string "MQTT Broker URI"
+    default "mqtts://your-broker.example.com"
+    help
+        The MQTT broker URI. Example: mqtts://example.com
+
+config MQTT_TOPIC
+    string "MQTT Publish Topic"
+    default "/dcms/status"
+    help
+        Topic to publish device data to.
+
+endmenu

@@ -9,7 +9,12 @@
 # Author: R. Andrew Ballard (c) 2025
 #
 idf_component_register(SRCS "main.c"
-                    INCLUDE_DIRS "."
-                    REQUIRES
-                        nvs_flash
-                        app_logic)
+                INCLUDE_DIRS "."
+                PRIV_REQUIRES 
+		    esp32-wifi-manager 
+		    mqtt_manager 
+		    esp_event
+		    nvs_flash
+		    app_logic
+		    board_manager
+)

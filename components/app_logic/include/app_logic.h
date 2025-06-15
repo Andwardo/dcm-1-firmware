@@ -1,24 +1,24 @@
-/*
- * File: components/app_logic/include/app_logic.h
+/* File: components/app_logic/include/app_logic.h
  *
- * Created on: 13 June 2025 10:00:00
- * Last edited on: 13 June 2025 10:00:00
- *
- * Version: 8.0.0
- *
+ * Created on: 2025-06-11
+ * Edited on:  2025-06-15 14:50:00 CDT
+ * Version: v7.8.1
  * Author: R. Andrew Ballard (c) 2025
- *
  */
 
-#ifndef APP_LOGIC_H
-#define APP_LOGIC_H
+#pragma once
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
- * @brief Main application task that handles reset logic, networking, and sensor loop.
+ * @brief Start the application logic FreeRTOS task.
+ *
+ * This creates and starts the `app_task` that runs the main loop.
  */
-void app_logic_task(void *param);
+void app_logic_start_task(void);
 
-#endif // APP_LOGIC_H
+#ifdef __cplusplus
+}
+#endif

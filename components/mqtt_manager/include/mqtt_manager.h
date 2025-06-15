@@ -1,38 +1,38 @@
 /*
- * File: components/mqtt_manager/include/mqtt_manager.h
+ *  mqtt_manager.h
  *
- * Created on: 13 June 2025 10:00:00
- * Last edited on: 13 June 2025 10:00:00
- *
- * Version: 8.0.0
- *
- * Author: R. Andrew Ballard (c) 2025
- *
+ *  Created on: 2025-06-15
+ *  Edited on: 2025-06-15 (CDT)
+ *      Author: Andwardo
+ *      Version: v1.1
  */
 
-#ifndef MQTT_MANAGER_H
-#define MQTT_MANAGER_H
+#pragma once
 
-#include <freertos/event_groups.h>
-#include "esp_err.h"
-#include <stdbool.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/** Bit set in event group when MQTT connects. */
-#define MQTT_CONNECTED_BIT (1 << 1)
-
-/** Initialize MQTT manager (creates client, event group). */
-void mqtt_manager_init(void);
-
-/** Start MQTT client (non-blocking). */
-void mqtt_manager_start(void);
-
-/** Retrieve internal MQTT event group handle for waiting. */
-EventGroupHandle_t mqtt_event_group_handle(void);
+#include "esp_event.h"
 
 /**
- * Publish the current sensor state as JSON to the broker.
- * @return ESP_OK on success, error otherwise.
+ * @brief Initialize the MQTT manager.
  */
-esp_err_t mqtt_manager_publish_sensor_state(bool power, bool water, bool pads);
+void mqtt_manager_init(void);
 
-#endif // MQTT_MANAGER_H
+/**
+ * @brief Start the MQTT manager (connect + subscribe).
+ */
+void mqtt_manager_start(void);
+
+/**
+ * @brief Publish a payload to a topic.
+ *
+ * @param topic   Null-terminated MQTT topic string.
+ * @param payload Null-terminated JSON or text payload.
+ */
+void mqtt_manager_publish(const char *topic, const char *payload);
+
+#ifdef __cplusplus
+}
+#endif

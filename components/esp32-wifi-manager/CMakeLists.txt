@@ -1,19 +1,22 @@
-#
-# File: components/esp32-wifi-manager/CMakeLists.txt
-#
-# Created on: 12 June 2025 23:30:00
-# Last edited on: 12 June 2025 23:30:00
-#
-# Version: 8.0.0
-#
-# Author: R. Andrew Ballard (c) 2025
-#
-set(EMBED_FILES
-    style.css
-    code.js
-    index.html
+idf_component_register(
+    SRCS
+        "wifi_manager.c"
+        "http_app.c"
+
+    INCLUDE_DIRS
+        "include"
+
+    PRIV_REQUIRES
+        esp_event
+        esp_http_server
+        esp_netif
+        esp_wifi
+        nvs_flash
+        cJSON
+        driver
+
+    EMBED_FILES
+        index.html
+        style.css
+        code.js
 )
-idf_component_register(SRCS "wifi_manager.c" "http_app.c"
-                    INCLUDE_DIRS "include"
-                    EMBED_FILES "${EMBED_FILES}"
-                    REQUIRES nvs_flash esp_wifi esp_http_server esp_netif esp_event json)
