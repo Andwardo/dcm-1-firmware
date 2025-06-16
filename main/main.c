@@ -1,15 +1,19 @@
 /*
  * File: main/main.c
  *
- * Version: v8.0.10
+ * Version: v8.0.13
+ * Created on:
+ * Last edited: 16 Jun 2025 18:47
+ *
  * Author: R. Andrew Ballard (c)2025
+ *
  */
 
 /* C Standard Library */
 #include <inttypes.h>
 
 /* FreeRTOS (MUST be first) */
-#include "freertos/FreeRTOS.h"
+#include "freertos/FreeRTOS.h" // CORRECTED from .hh to .h
 #include "freertos/task.h"
 
 /* ESP-IDF */
@@ -50,47 +54,21 @@ static httpd_handle_t start_http_server(void) {
 }
 
 void app_main(void) {
-    ESP_LOGI(TAG, ">> DCM-1 v8.0.10 booting...");
+    ESP_LOGI(TAG, ">> DCM-1 v8.0.13 booting...");
 
-    // 1. Initialize NVS
+    // Initialize all necessary services and components
     ESP_ERROR_CHECK(nvs_flash_init());
-
-    // 2. Initialize TCP/IP stack & event loop
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    // 3. Initialize board-specific peripherals
     board_manager_init();
-
-    /*
-     * CORRECTED ORDER: Initialize managers BEFORE starting application tasks
-     * that depend on them.
-     */
-    // 4. Initialize Wi-Fi Manager (creates event group)
     ESP_ERROR_CHECK(wifi_manager_init());
+    app_logic_init(); // This starts the main application task
 
-    // 5. Initialize Application Logic (creates task that USES event group)
-    app_logic_init();
-
-    // The rest of this logic will be refactored in Phase 3
-    if (!wifi_manager_has_saved_credentials()) {
-        ESP_LOGW(TAG, "No saved credentials -- provisioning mode");
-        wifi_manager_start_provisioning();
-    } else {
-        ESP_LOGI(TAG, "Found credentials -- connecting to AP");
-        wifi_manager_connect();
-    }
-
-    ESP_LOGI(TAG, "Waiting for Wi-Fi connection...");
-    while (!wifi_manager_is_ready()) {
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-
-    ESP_LOGI(TAG, "Wi-Fi ready (mode=%s)",
-             wifi_manager_is_sta_connected() ? "STA" : "AP");
-
+    // Start the HTTP server
     start_http_server();
 
-    // Heartbeat loop is no longer needed here, as app_logic handles the main loop
-    ESP_LOGI(TAG, "Initialization complete. Handing off to app_task.");
+    ESP_LOGI(TAG, "Initialization complete. Main task is finished.");
+
+    // A task function must not return. The main task's job is done, so we delete it.
+    vTaskDelete(NULL);
 }
