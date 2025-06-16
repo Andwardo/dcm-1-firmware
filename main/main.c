@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "esp_log.h"
+#include "nvs_flash.h"           // ← added for NVS init
 
 #include "board_manager.h"
 #include "wifi_manager.h"
@@ -23,6 +24,15 @@ void app_main(void)
     ESP_LOGI(TAG, "Initializing board manager...");
     board_manager_init();
 
+    // --- NVS must be inited before Wi-Fi ---
+    ESP_LOGI(TAG, "Initializing NVS...");
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(err);
+
     ESP_LOGI(TAG, "Initializing Wi-Fi manager...");
     wifi_manager_init();
 
@@ -32,4 +42,3 @@ void app_main(void)
 
     // From here, app_logic_start_task will be invoked once Wi-Fi is connected.
 }
-
