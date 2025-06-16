@@ -1,50 +1,37 @@
 /*
- *  File: components/esp32-wifi-manager/include/wifi_manager.h
+ * File: components/esp32-wifi-manager/include/wifi_manager.h
  *
- *  Created on: 2025-06-13 10:00:00
- *  Edited on:  2025-06-15 10:18:00 (CDT)
+ * Created on: 2025-06-15
+ * Edited on:  2025-06-16
  *
- *  Author: R. Andrew Ballard (c) 2025
- *  Version: v8.3.0
+ * Version: v8.0.7
  *
- *  Description:
- *    Wi-Fi Manager interface for PianoGuard. Handles NVS-based credential load,
- *    automatic fallback to AP provisioning, and optional boot-time reset via GPIO.
+ * Author: R. Andrew Ballard (c)2025
  */
-
-#pragma once
 
 #ifndef WIFI_MANAGER_H
 #define WIFI_MANAGER_H
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/event_groups.h"
+#include "esp_err.h"
+#include <stdbool.h>
+#include "freertos/event_groups.h" // Add this for EventGroupHandle_t
 
-#define WIFI_CONNECTED_BIT (1 << 0)
+/* Bit definitions for the Wi-Fi event group */
+#define WIFI_CONNECTED_BIT BIT0 // The bit to set when connected
+
+/* Function Declarations */
+esp_err_t wifi_manager_init(void);
+bool      wifi_manager_has_saved_credentials(void);
+void      wifi_manager_start_provisioning(void);
+esp_err_t wifi_manager_connect(void);
+bool      wifi_manager_is_ready(void);
+bool      wifi_manager_is_sta_connected(void);
 
 /**
- * @brief Callback type for notifying connection success
- */
-typedef void (*wifi_connected_cb_t)(void);
-
-/**
- * @brief Initialize Wi-Fi manager (must be called before start).
- */
-void wifi_manager_init(void);
-
-/**
- * @brief Start Wi-Fi logic: STA if credentials found, AP fallback otherwise.
- *        If GPIO reset pin is held low at boot, clears credentials.
+ * @brief Gets the handle to the Wi-Fi event group.
  *
- * @param cb Optional callback invoked after successful STA connection.
+ * @return The EventGroupHandle_t for the Wi-Fi event group.
  */
-void wifi_manager_start(wifi_connected_cb_t cb);
-
-/**
- * @brief Get internal event group handle for connection sync.
- *
- * @return EventGroupHandle_t used by Wi-Fi manager.
- */
-EventGroupHandle_t wifi_event_group_handle(void);
+EventGroupHandle_t wifi_event_group_handle(void); // Add this getter function
 
 #endif // WIFI_MANAGER_H
