@@ -12,8 +12,9 @@ idf_component_register(
         esp_netif
         esp_wifi
         nvs_flash
-        cJSON
+        cJSON           # CORRECTED back to match your directory name
         driver
+        lwip
 
     EMBED_FILES
         index.html
