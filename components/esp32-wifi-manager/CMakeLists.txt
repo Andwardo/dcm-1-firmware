@@ -6,13 +6,17 @@ idf_component_register(
     INCLUDE_DIRS
         "include"
 
+    # Public dependencies that our .h files include
+    REQUIRES
+        esp_wifi
+
+    # Private dependencies that only our .c files use
     PRIV_REQUIRES
         esp_event
         esp_http_server
         esp_netif
-        esp_wifi
         nvs_flash
-        cJSON           # CORRECTED back to match your directory name
+        cJSON
         driver
         lwip
 

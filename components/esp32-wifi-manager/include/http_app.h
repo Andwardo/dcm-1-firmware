@@ -1,22 +1,12 @@
 /*
- * File: components/esp32-wifi-manager/http_app.h
- *
- * Created on: 13 June 2025 10:30:00
- * Last edited on: 13 June 2025 10:30:00
- *
- * Version: 8.0.1
- *
- * Author: R. Andrew Ballard (c) 2025
- *
+ * File: components/esp32-wifi-manager/include/http_app.h
+ * Version: v8.1.6
  */
+#ifndef HTTP_APP_H
+#define HTTP_APP_H
 
-#ifndef HTTP_APP_H_
-#define HTTP_APP_H_
+#include "esp_err.h"
 
-/**
- * @brief Stub for HTTP provisioning server.
- *        Currently disabled to eliminate build errors.
- */
-void http_app_start(void);
+esp_err_t http_app_start_provisioning_server(void);
 
-#endif /* HTTP_APP_H_ */
+#endif

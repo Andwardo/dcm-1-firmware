@@ -1,37 +1,33 @@
 /*
  * File: components/esp32-wifi-manager/include/wifi_manager.h
- *
- * Created on: 2025-06-15
- * Edited on:  2025-06-16
- *
- * Version: v8.0.7
- *
- * Author: R. Andrew Ballard (c)2025
+ * Version: v8.2.7
+ * Author: R. Andrew Ballard (c) 2025
  */
-
 #ifndef WIFI_MANAGER_H
 #define WIFI_MANAGER_H
 
 #include "esp_err.h"
 #include <stdbool.h>
-#include "freertos/event_groups.h" // Add this for EventGroupHandle_t
+#include "freertos/FreeRTOS.h"
+#include "freertos/event_groups.h"
+#include "esp_wifi_types.h"
 
-/* Bit definitions for the Wi-Fi event group */
-#define WIFI_CONNECTED_BIT BIT0 // The bit to set when connected
+#define WIFI_MANAGER_AP_STARTED_BIT      BIT0
+#define WIFI_MANAGER_STA_CONNECTED_BIT   BIT1
+#define WIFI_MANAGER_STA_DISCONNECTED_BIT BIT2
 
-/* Function Declarations */
-esp_err_t wifi_manager_init(void);
-bool      wifi_manager_has_saved_credentials(void);
-void      wifi_manager_start_provisioning(void);
-esp_err_t wifi_manager_connect(void);
-bool      wifi_manager_is_ready(void);
-bool      wifi_manager_is_sta_connected(void);
+typedef enum {
+    WIFI_MANAGER_MSG_START_PROVISIONING,
+    WIFI_MANAGER_MSG_CONNECT_STA,
+} wifi_manager_message_id_e;
 
-/**
- * @brief Gets the handle to the Wi-Fi event group.
- *
- * @return The EventGroupHandle_t for the Wi-Fi event group.
- */
-EventGroupHandle_t wifi_event_group_handle(void); // Add this getter function
+typedef struct {
+    wifi_manager_message_id_e msg_id;
+    wifi_config_t sta_config;
+} wifi_manager_message_t;
 
-#endif // WIFI_MANAGER_H
+void wifi_manager_init(void);
+BaseType_t wifi_manager_send_message(wifi_manager_message_id_e msg_id, const void *data);
+EventGroupHandle_t wifi_manager_get_event_group(void);
+
+#endif
