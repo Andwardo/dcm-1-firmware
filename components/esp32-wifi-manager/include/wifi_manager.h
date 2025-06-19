@@ -1,6 +1,12 @@
 /*
  * File: components/esp32-wifi-manager/include/wifi_manager.h
- * Version: v8.2.7
+ * Description: Message-driven Wi-Fi management component.
+ *
+ * Created on: 2025-06-18
+ * Edited on:  2025-06-19
+ *
+ * Version: v8.2.16
+ *
  * Author: R. Andrew Ballard (c) 2025
  */
 #ifndef WIFI_MANAGER_H
@@ -27,7 +33,7 @@ typedef struct {
 } wifi_manager_message_t;
 
 void wifi_manager_init(void);
-BaseType_t wifi_manager_send_message(wifi_manager_message_id_e msg_id, const void *data);
+BaseType_t wifi_manager_send_message(const wifi_manager_message_t *msg);
 EventGroupHandle_t wifi_manager_get_event_group(void);
 
 #endif

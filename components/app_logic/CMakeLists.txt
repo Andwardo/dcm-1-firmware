@@ -10,5 +10,5 @@ idf_component_register(
     INCLUDE_DIRS
         "include"
 
-    PRIV_REQUIRES esp32-wifi-manager mqtt_manager esp_event driver board_manager
+    PRIV_REQUIRES esp32-wifi-manager mqtt_manager esp_event driver board_manager cJSON
 )

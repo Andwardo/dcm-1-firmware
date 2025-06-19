@@ -1,8 +1,15 @@
 /*
  * File: components/esp32-wifi-manager/wifi_manager.c
- * Version: v8.2.7
+ * Description: Message-driven Wi-Fi management component.
+ *
+ * Created on: 2025-06-18
+ * Edited on:  2025-06-19
+ *
+ * Version: v8.2.17
+ *
  * Author: R. Andrew Ballard (c) 2025
  */
+#include "wifi_manager.h"
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -13,7 +20,6 @@
 #include "esp_netif.h"
 #include "esp_wifi.h"
 #include "nvs_flash.h"
-#include "wifi_manager.h"
 #include "http_app.h"
 
 static const char *TAG = "WIFI_MANAGER";
@@ -31,15 +37,9 @@ void wifi_manager_init(void) {
     xTaskCreate(wifi_manager_task, "wifi_manager_task", 4096, NULL, 5, NULL);
 }
 
-BaseType_t wifi_manager_send_message(wifi_manager_message_id_e msg_id, const void *data) {
-    wifi_manager_message_t msg;
-    msg.msg_id = msg_id;
-    if (data) {
-        memcpy(&msg.sta_config, data, sizeof(wifi_config_t));
-    } else {
-        memset(&msg.sta_config, 0, sizeof(wifi_config_t));
-    }
-    return xQueueSend(s_wifi_manager_queue, &msg, portMAX_DELAY);
+BaseType_t wifi_manager_send_message(const wifi_manager_message_t *msg) {
+    if (!msg) return pdFALSE;
+    return xQueueSend(s_wifi_manager_queue, msg, portMAX_DELAY);
 }
 
 EventGroupHandle_t wifi_manager_get_event_group(void) {
@@ -52,9 +52,10 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
             ESP_LOGI(TAG, "Event: SoftAP Started");
             xEventGroupSetBits(s_wifi_event_group, WIFI_MANAGER_AP_STARTED_BIT);
         } else if (event_id == WIFI_EVENT_STA_DISCONNECTED) {
-            ESP_LOGW(TAG, "Event: Station disconnected.");
+            ESP_LOGW(TAG, "Event: Station disconnected. Retrying...");
             xEventGroupSetBits(s_wifi_event_group, WIFI_MANAGER_STA_DISCONNECTED_BIT);
             xEventGroupClearBits(s_wifi_event_group, WIFI_MANAGER_STA_CONNECTED_BIT);
+            esp_wifi_connect();
         }
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ESP_LOGI(TAG, "Event: Got IP, Wi-Fi is connected");
@@ -64,23 +65,27 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
 }
 
 static void wifi_manager_task(void *pvParameters) {
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    ESP_ERROR_CHECK(esp_netif_init());
+    // THE FIX: The core network stack is initialized in main.c now.
+    // This task ONLY initializes the Wi-Fi driver and interfaces.
     esp_netif_create_default_wifi_ap();
     esp_netif_create_default_wifi_sta();
+
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL, NULL));
     ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));
 
     wifi_manager_message_t msg;
+    ESP_LOGI(TAG, "Task started, waiting for messages.");
+
     for (;;) {
         if (xQueueReceive(s_wifi_manager_queue, &msg, portMAX_DELAY)) {
             switch (msg.msg_id) {
                 case WIFI_MANAGER_MSG_START_PROVISIONING:
                     ESP_LOGI(TAG, "Handling MSG: START_PROVISIONING");
-                    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+                    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
                     wifi_config_t ap_config = {0};
                     ap_config.ap.max_connection = 4;
                     ap_config.ap.authmode = WIFI_AUTH_OPEN;

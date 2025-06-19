@@ -1,98 +1,75 @@
 /*
  * File: components/board_manager/board_manager.c
+ * Description: Manages hardware-specific interactions by reading GPIOs.
  *
- * Created on: 12 June 2025 23:30:00
- * Last Edited on: 15 June 2025 14:10:00 CDT
+ * Created on: 2025-06-18
+ * Edited on:  2025-06-19
  *
- * Version: 8.1.1
+ * Version: v8.3.2
  *
  * Author: R. Andrew Ballard (c) 2025
- *
  */
 
 #include "board_manager.h"
+#include "driver/gpio.h"
 #include "esp_log.h"
-#include "nvs_flash.h"
-#include "nvs.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 
 static const char *TAG = "BOARD_MANAGER";
 
-/**
- * @brief Initialize GPIO peripherals (LED + Reset Button).
- */
-esp_err_t board_manager_init(void)
-{
-    gpio_config_t output_conf = {
-        .pin_bit_mask = (1ULL << STATUS_LED_PIN),
-        .mode = GPIO_MODE_OUTPUT,
-    };
-    gpio_config(&output_conf);
+// --- FINAL, SAFE GPIO Pin Definitions ---
+#define GPIO_PADS_A         6
+#define GPIO_WATER_A        7
+#define GPIO_POWER_A        12
+#define GPIO_PADS_B         18
+#define GPIO_WATER_B        8  // <-- Moved from GPIO 19
+#define GPIO_POWER_B        9  // <-- Moved from GPIO 20
 
-    gpio_config_t button_conf = {
-        .pin_bit_mask = (1ULL << WIFI_RESET_PIN),
+// --- Public API Implementation ---
+
+esp_err_t board_manager_init(void) {
+    ESP_LOGI(TAG, "Initializing Board Manager with final pinout...");
+
+    uint64_t pin_bit_mask = (1ULL << GPIO_PADS_A)  | (1ULL << GPIO_PADS_B) |
+                            (1ULL << GPIO_WATER_A) | (1ULL << GPIO_WATER_B)|
+                            (1ULL << GPIO_POWER_A) | (1ULL << GPIO_POWER_B);
+
+    gpio_config_t io_conf = {
+        .pin_bit_mask = pin_bit_mask,
         .mode = GPIO_MODE_INPUT,
-        .pull_up_en = GPIO_PULLUP_ENABLE,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE
     };
-    gpio_config(&button_conf);
 
-    ESP_LOGI(TAG, "Board peripherals initialized.");
+    esp_err_t err = gpio_config(&io_conf);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to configure GPIOs: %s", esp_err_to_name(err));
+        return err;
+    }
+
+    ESP_LOGI(TAG, "Board Manager initialized successfully.");
     return ESP_OK;
 }
 
-/**
- * @brief Read the GPIO state of the Wi-Fi reset button.
- * @return true if button is pressed (active low), false otherwise.
- */
-bool board_manager_is_reset_button_pressed(void)
-{
-    return gpio_get_level(WIFI_RESET_PIN) == 0;
-}
-
-/**
- * @brief If reset button is held during boot for >3 seconds,
- *        erase Wi-Fi credentials and reboot into provisioning mode.
- *
- *        This function should be called **before** wifi_manager_start().
- */
-void board_manager_check_reset_button_hold(void)
-{
-    const TickType_t poll_interval = pdMS_TO_TICKS(100);   // Check every 100ms
-    const TickType_t hold_time = pdMS_TO_TICKS(3000);      // Require 3s hold
-
-    TickType_t start_time = xTaskGetTickCount();
-
-    ESP_LOGI(TAG, "Checking for long reset button press...");
-
-    // Wait while button is pressed, timing the duration
-    while (gpio_get_level(WIFI_RESET_PIN) == 0) {
-        if ((xTaskGetTickCount() - start_time) >= hold_time) {
-
-            ESP_LOGW(TAG, "Reset button held >3s — clearing saved credentials.");
-
-            // Erase Wi-Fi credentials stored in NVS
-            nvs_handle_t nvs;
-            if (nvs_open("wifi_creds", NVS_READWRITE, &nvs) == ESP_OK) {
-                nvs_erase_all(nvs);
-                nvs_commit(nvs);
-                nvs_close(nvs);
-                ESP_LOGI(TAG, "Credentials erased successfully.");
-            } else {
-                ESP_LOGE(TAG, "Failed to open NVS for credential erase.");
-            }
-
-            // Brief delay to allow logs to flush
-            vTaskDelay(pdMS_TO_TICKS(500));
-
-            ESP_LOGI(TAG, "Rebooting into AP mode...");
-            esp_restart();
-        }
-
-        // Delay between button polls
-        vTaskDelay(poll_interval);
+esp_err_t board_manager_get_status(dcm_status_t *status) {
+    if (status == NULL) {
+        return ESP_ERR_INVALID_ARG;
     }
 
-    // Button was released before threshold
-    ESP_LOGI(TAG, "No long press detected. Continuing normal boot.");
+    // Read the digital output from the comparators for each line
+    bool pads_a_state = gpio_get_level(GPIO_PADS_A);
+    bool pads_b_state = gpio_get_level(GPIO_PADS_B);
+
+    bool water_a_state = gpio_get_level(GPIO_WATER_A);
+    bool water_b_state = gpio_get_level(GPIO_WATER_B);
+    
+    bool power_a_state = gpio_get_level(GPIO_POWER_A);
+    bool power_b_state = gpio_get_level(GPIO_POWER_B);
+
+    // The alert is active if EITHER of the A or B lines is triggered by its comparator.
+    status->pads_worn = pads_a_state || pads_b_state;
+    status->water_low = water_a_state || water_b_state;
+    status->power_ok  = power_a_state || power_b_state;
+
+    return ESP_OK;
 }

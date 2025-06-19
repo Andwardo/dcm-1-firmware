@@ -1,40 +1,41 @@
 /*
  * File: components/board_manager/include/board_manager.h
+ * Description: Manages hardware-specific interactions, including sensor GPIOs.
  *
- * Created on: 12 June 2025 23:30:00
- * Last edited on: 15 June 2025 13:45:00 CDT
+ * Created on: 2025-06-18
+ * Edited on:  2025-06-18
  *
- * Version: 8.1.1
+ * Version: v8.3.0
  *
  * Author: R. Andrew Ballard (c) 2025
- *
  */
+#ifndef BOARD_MANAGER_H
+#define BOARD_MANAGER_H
 
-#ifndef BOARD_MANAGER_H_
-#define BOARD_MANAGER_H_
-
-#include <stdbool.h>
-#include "driver/gpio.h"
 #include "esp_err.h"
-
-#define STATUS_LED_PIN GPIO_NUM_2
-#define WIFI_RESET_PIN GPIO_NUM_4
+#include <stdbool.h>
 
 /**
- * @brief Initialize all GPIOs and peripherals.
+ * @brief Structure to hold the final status of all DCM inputs.
+ */
+typedef struct {
+    bool power_ok;
+    bool water_low;
+    bool pads_worn;
+} dcm_status_t;
+
+/**
+ * @brief Initializes the board manager component by configuring GPIOs.
+ * @return esp_err_t ESP_OK on success.
  */
 esp_err_t board_manager_init(void);
 
 /**
- * @brief Return true if reset button is physically pressed.
+ * @brief Gets the current status of the DCM sensors by reading and combining GPIO states.
+ * @param status Pointer to a dcm_status_t struct to be filled.
+ * @return esp_err_t ESP_OK on success.
  */
-bool board_manager_is_reset_button_pressed(void);
+esp_err_t board_manager_get_status(dcm_status_t *status);
 
-/**
- * @brief If reset button is held at boot > 3s, clear NVS and reboot.
- * 
- * Call this early in boot, before wifi_manager_start().
- */
-void board_manager_check_reset_button_hold(void);
 
-#endif /* BOARD_MANAGER_H_ */
+#endif // BOARD_MANAGER_H

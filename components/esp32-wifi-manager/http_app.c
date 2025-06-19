@@ -1,16 +1,19 @@
 /*
  * File: components/esp32-wifi-manager/http_app.c
- * Implements the web server and API for Wi-Fi provisioning.
+ * Description: Implements the web server and API for Wi-Fi provisioning.
  *
  * Created on: 2025-06-17
  * Edited on:  2025-06-18
  *
- * Version: v8.2.9
+ * Version: v8.2.15
  *
  * Author: R. Andrew Ballard (c) 2025
  */
+
 #include "http_app.h"
 #include <string.h>
+
+// FreeRTOS & ESP-IDF
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
@@ -19,11 +22,14 @@
 #include "nvs_flash.h"
 #include "cJSON.h"
 #include "esp_netif.h"
+
+// lwIP for DNS
 #include "lwip/dns.h"
 
 static const char *TAG = "HTTP_APP";
 static httpd_handle_t s_server = NULL;
 
+// --- Embedded File Declarations (from CMake) ---
 extern const char index_html_start[] asm("_binary_index_html_start");
 extern const char index_html_end[]   asm("_binary_index_html_end");
 extern const char style_css_start[]  asm("_binary_style_css_start");
@@ -31,73 +37,98 @@ extern const char style_css_end[]    asm("_binary_style_css_end");
 extern const char code_js_start[]    asm("_binary_code_js_start");
 extern const char code_js_end[]      asm("_binary_code_js_end");
 
-static esp_err_t root_get_handler(httpd_req_t *req);
+
+// --- Private Function Prototypes ---
+static esp_err_t root_handler(httpd_req_t *req);
 static esp_err_t api_scan_get_handler(httpd_req_t *req);
 static esp_err_t api_connect_post_handler(httpd_req_t *req);
 static void start_dns_server(void);
 
+
+// --- Public API ---
 esp_err_t http_app_start_provisioning_server(void) {
     if (s_server) return ESP_OK;
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.uri_match_fn = httpd_uri_match_wildcard;
-    config.task_priority = 4;
 
+    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    config.task_priority = 4;
+    
     ESP_LOGI(TAG, "Starting web server for provisioning...");
     if (httpd_start(&s_server, &config) != ESP_OK) {
         ESP_LOGE(TAG, "Failed to start web server");
         return ESP_FAIL;
     }
 
-    // --- Register URI Handlers (most specific routes first) ---
+    ESP_LOGI(TAG, "Registering URI handlers");
+
+    // Handlers for API endpoints
     httpd_uri_t get_scan    = { .uri = "/api/wifi-scan", .method = HTTP_GET,  .handler = api_scan_get_handler };
     httpd_register_uri_handler(s_server, &get_scan);
 
     httpd_uri_t post_connect = { .uri = "/api/connect",   .method = HTTP_POST, .handler = api_connect_post_handler };
     httpd_register_uri_handler(s_server, &post_connect);
     
-    // The catch-all handler for serving files MUST be last
-    httpd_uri_t get_root    = { .uri = "/*",             .method = HTTP_GET,  .handler = root_get_handler };
+    // Catch-all handler for serving files and captive portal redirects.
+    // NOTE: This must be registered LAST.
+    httpd_uri_t get_root    = { .uri = "/*",             .method = HTTP_GET,  .handler = root_handler };
     httpd_register_uri_handler(s_server, &get_root);
 
     start_dns_server();
     return ESP_OK;
 }
 
-// ... (The rest of the file is identical to the last version) ...
+// --- Internal Logic & Handlers ---
+
 static void start_dns_server(void) {
     esp_netif_ip_info_t ip_info;
     esp_netif_get_ip_info(esp_netif_get_handle_from_ifkey("WIFI_AP_DEF"), &ip_info);
+
     ip_addr_t dns_ip;
     dns_ip.u_addr.ip4.addr = ip_info.ip.addr;
     dns_ip.type = IPADDR_TYPE_V4;
+    
     dns_setserver(0, &dns_ip);
     ESP_LOGI(TAG, "DNS Server for captive portal started on " IPSTR, IP2STR(&ip_info.ip));
 }
 
-static esp_err_t root_get_handler(httpd_req_t *req) {
+static esp_err_t root_handler(httpd_req_t *req) {
+    // Check for specific file requests first
     if (strcmp(req->uri, "/style.css") == 0) {
         httpd_resp_set_type(req, "text/css");
         return httpd_resp_send(req, style_css_start, style_css_end - style_css_start);
     } else if (strcmp(req->uri, "/code.js") == 0) {
         httpd_resp_set_type(req, "application/javascript");
         return httpd_resp_send(req, code_js_start, code_js_end - code_js_start);
+    } else if (strcmp(req->uri, "/") == 0) {
+        httpd_resp_set_type(req, "text/html");
+        return httpd_resp_send(req, index_html_start, index_html_end - index_html_start);
+    } else {
+        // Otherwise, assume it's a captive portal check and redirect
+        ESP_LOGI(TAG, "Redirecting captive portal check for URI: %s", req->uri);
+        httpd_resp_set_status(req, "302 Found");
+        httpd_resp_set_hdr(req, "Location", "http://192.168.4.1");
+        return httpd_resp_send(req, NULL, 0);
     }
-    httpd_resp_set_type(req, "text/html");
-    return httpd_resp_send(req, index_html_start, index_html_end - index_html_start);
 }
 
 static esp_err_t api_scan_get_handler(httpd_req_t *req) {
     ESP_LOGI(TAG, "API: Scanning for Wi-Fi networks...");
-    uint16_t num_aps = 0;
-    wifi_scan_config_t scan_config = { .show_hidden = false, .scan_type = WIFI_SCAN_TYPE_ACTIVE };
-    ESP_ERROR_CHECK(esp_wifi_scan_start(&scan_config, true));
-    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&num_aps));
-    if (num_aps == 0) {
-        httpd_resp_set_type(req, "application/json");
+    httpd_resp_set_type(req, "application/json");
+
+    esp_err_t scan_err = esp_wifi_scan_start(NULL, true);
+    if (scan_err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to start Wi-Fi scan: %s", esp_err_to_name(scan_err));
         return httpd_resp_send(req, "[]", 2);
     }
+
+    uint16_t num_aps = 0;
+    esp_wifi_scan_get_ap_num(&num_aps);
+    if (num_aps == 0) {
+        ESP_LOGI(TAG, "API: No networks found.");
+        return httpd_resp_send(req, "[]", 2);
+    }
+
     wifi_ap_record_t *ap_list = malloc(sizeof(wifi_ap_record_t) * num_aps);
-    if(ap_list == NULL) return ESP_ERR_NO_MEM;
+    if (!ap_list) { return ESP_ERR_NO_MEM; }
     ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&num_aps, ap_list));
 
     cJSON *root = cJSON_CreateArray();
@@ -114,11 +145,10 @@ static esp_err_t api_scan_get_handler(httpd_req_t *req) {
 
     char *json_str = cJSON_PrintUnformatted(root);
     cJSON_Delete(root);
-    
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_send(req, json_str, strlen(json_str));
 
+    httpd_resp_send(req, json_str, strlen(json_str));
     free(json_str);
+
     ESP_LOGI(TAG, "API: Scan complete.");
     return ESP_OK;
 }
@@ -128,15 +158,19 @@ static esp_err_t api_connect_post_handler(httpd_req_t *req) {
     int recv_len = httpd_req_recv(req, content, sizeof(content) - 1);
     if (recv_len <= 0) { return ESP_FAIL; }
     content[recv_len] = '\0';
+    
     cJSON *json = cJSON_Parse(content);
     if (json == NULL) { httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Invalid JSON"); return ESP_FAIL; }
+    
     const cJSON *ssid_json = cJSON_GetObjectItem(json, "ssid");
     const cJSON *pass_json = cJSON_GetObjectItem(json, "password");
+    
     if (!cJSON_IsString(ssid_json) || !cJSON_IsString(pass_json)) {
         cJSON_Delete(json);
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Missing SSID or Password");
         return ESP_FAIL;
     }
+    
     ESP_LOGI(TAG, "API: Received credentials for SSID: %s", ssid_json->valuestring);
     
     nvs_handle_t nvs_handle;
@@ -154,5 +188,6 @@ static esp_err_t api_connect_post_handler(httpd_req_t *req) {
     ESP_LOGI(TAG, "API: Credentials saved. Rebooting device in 2 seconds...");
     vTaskDelay(pdMS_TO_TICKS(2000));
     esp_restart();
+    
     return ESP_OK;
 }
