@@ -1,0 +1,15 @@
+/* File: main/assets/style.css
+   Project:    PianoGuard_DCM-1
+   Version:    7.8.8
+   Author:     Andrew Ballard
+   Date:       Jun 25 2025
+*/
+body {
+  font-family: sans-serif;
+  margin: 0; padding: 0;
+}
+.topnav { background: #333; color: #fff; padding: 1rem; }
+.content { padding: 1rem; }
+.button { padding: 0.5rem 1rem; font-size: 1rem; }
+.networks { list-style: none; padding: 0; }
+.networks li { margin: 0.5rem 0; }

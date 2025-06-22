@@ -1,82 +1,78 @@
 /*
- * File: main/main.c
- * Description: Main application entry point and controller task.
+ * Project:    PianoGuard_DCM-1
+ * File:       main/main.c
+ * Version:    8.2.43D
+ * Author:     R. Andrew Ballard
+ * Date:       Jun 26 2025
  *
- * Created on: 2025-06-15
- * Edited on:  2025-06-19
- *
- * Version: v8.2.16
- *
- * Author: R. Andrew Ballard (c) 2025
+ * Bootloader + HTTP captive-portal with SPIFFS mounting.
  */
+
+#include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/event_groups.h"
 #include "esp_log.h"
+#include "esp_system.h"
 #include "nvs_flash.h"
-#include "esp_event.h"
 #include "esp_netif.h"
+#include "esp_event.h"
 #include "esp_wifi.h"
+#include "esp_spiffs.h"
 
-// Project Components
-#include "app_logic.h"
-#include "wifi_manager.h"
-#include "http_app.h"
-#include "board_manager.h"
-#include "mqtt_manager.h"
+#include "httpd_server.h"
+#include "device_config.h"
+#include "sensors.h"
 
-static const char *TAG = "APP_CONTROLLER";
-#define NVS_NAMESPACE_WIFI "wifi_cred"
+static const char *TAG = "PianoGuard";
 
-void app_main(void) {
-    ESP_LOGI(TAG, ">> DCM-1 v8.2.16 booting...");
+static void init_softap(void)
+{
+    ESP_LOGI(TAG, "Initializing SoftAP…");
+    ESP_ERROR_CHECK( esp_event_loop_create_default() );
+    esp_netif_init();
+    esp_netif_create_default_wifi_ap();
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
+    wifi_config_t ap_cfg = {
+        .ap = {
+            .ssid           = "PianoGuard_AP",
+            .ssid_len       = 0,
+            .channel        = 1,
+            .authmode       = WIFI_AUTH_OPEN,
+            .max_connection = 4,
+            .password       = "",
+        },
+    };
+    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_APSTA) );
+    ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_AP, &ap_cfg) );
+    ESP_ERROR_CHECK( esp_wifi_start() );
+    ESP_LOGI(TAG, "SoftAP \"%s\" started", ap_cfg.ap.ssid);
+}
 
-    // 1. Initialize all core services FIRST.
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
+static void mount_spiffs(void)
+{
+    ESP_LOGI(TAG, "Mounting SPIFFS…");
+    esp_spiffs_conf_t conf = {
+        .base_path = "/spiffs",
+        .partition_label = NULL,
+        .max_files = 5,
+        .format_if_mount_failed = false
+    };
+    ESP_ERROR_CHECK( esp_spiffs_register(&conf) );
+    size_t total = 0, used = 0;
+    ESP_ERROR_CHECK( esp_spiffs_info(NULL, &total, &used) );
+    ESP_LOGI(TAG, "SPIFFS mounted: total=%u, used=%u", (unsigned)total, (unsigned)used);
+}
 
-    // 2. Initialize our components. This starts their respective tasks.
-    board_manager_init();
-    wifi_manager_init(); // This starts the wifi_manager_task
-    app_logic_init();    // This starts the app_logic_task
-
-    // 3. --- Check for saved credentials and decide application state ---
-    nvs_handle_t nvs_handle;
-    esp_err_t err = nvs_open(NVS_NAMESPACE_WIFI, NVS_READONLY, &nvs_handle);
-    if (err != ESP_OK) {
-        // --- STATE: PROVISIONING MODE ---
-        ESP_LOGI(TAG, "No credentials in NVS. Starting provisioning.");
-        
-        // Command the wifi_manager to start the Access Point
-        wifi_manager_message_t msg = { .msg_id = WIFI_MANAGER_MSG_START_PROVISIONING };
-        wifi_manager_send_message(&msg);
-        
-        // Wait for the wifi_manager to signal that the AP is ready
-        ESP_LOGI(TAG, "Waiting for Wi-Fi AP to be ready...");
-        EventGroupHandle_t wifi_events = wifi_manager_get_event_group();
-        xEventGroupWaitBits(wifi_events, WIFI_MANAGER_AP_STARTED_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
-        
-        ESP_LOGI(TAG, "AP is ready. Starting provisioning web server.");
-        http_app_start_provisioning_server();
-    } else {
-        // --- STATE: STATION (NORMAL) MODE ---
-        ESP_LOGI(TAG, "Found credentials. Starting station mode.");
-        
-        wifi_manager_message_t msg = { .msg_id = WIFI_MANAGER_MSG_CONNECT_STA };
-        size_t len_ssid = sizeof(msg.sta_config.sta.ssid);
-        size_t len_pass = sizeof(msg.sta_config.sta.password);
-
-        nvs_get_str(nvs_handle, "ssid", (char *)msg.sta_config.sta.ssid, &len_ssid);
-        nvs_get_str(nvs_handle, "password", (char *)msg.sta_config.sta.password, &len_pass);
-        nvs_close(nvs_handle);
-
-        // Command the wifi_manager to connect
-        wifi_manager_send_message(&msg);
-    }
-
-    ESP_LOGI(TAG, "Controller setup complete. Main task is now idle.");
-    while(1) {
-        vTaskDelay(portMAX_DELAY);
+void app_main(void)
+{
+    ESP_LOGI(TAG, "Booting…");
+    ESP_ERROR_CHECK( nvs_flash_init() );
+    ESP_ERROR_CHECK( esp_event_loop_create_default() );
+    init_softap();
+    mount_spiffs();
+    start_http_server();
+    while (true) {
+        vTaskDelay(pdMS_TO_TICKS(10000));
     }
 }
