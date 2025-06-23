@@ -1,77 +1,53 @@
 /*
- * Project:    PianoGuard_DCM-1
- * File:       main/main.c
- * Version:    8.2.43D
- * Author:     R. Andrew Ballard
- * Date:       Jun 26 2025
+ * Project:   PianoGuard_DCM-1
+ * File:      main/main.c
+ * Version:   8.3.0
+ * Author:    R. Andrew Ballard
+ * Date:      June 23, 2025
  *
- * Bootloader + HTTP captive-portal with SPIFFS mounting.
+ * Main application entry point for PianoGuard.
  */
-
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
-#include "esp_system.h"
 #include "nvs_flash.h"
 #include "esp_netif.h"
 #include "esp_event.h"
-#include "esp_wifi.h"
-#include "esp_spiffs.h"
+#include "esp_spiffs.h" // For esp_spiffs_info
+#include "mqtt_manager.h"
+#include "cert_loader.h"
 
-#include "httpd_server.h"
-#include "device_config.h"
-#include "sensors.h"
+// Forward declarations
+void start_http_server(void);
+// void start_mqtt_manager(void);
 
-static const char *TAG = "PianoGuard";
-
-static void init_softap(void)
-{
-    ESP_LOGI(TAG, "Initializing SoftAP…");
-    ESP_ERROR_CHECK( esp_event_loop_create_default() );
-    esp_netif_init();
-    esp_netif_create_default_wifi_ap();
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
-    wifi_config_t ap_cfg = {
-        .ap = {
-            .ssid           = "PianoGuard_AP",
-            .ssid_len       = 0,
-            .channel        = 1,
-            .authmode       = WIFI_AUTH_OPEN,
-            .max_connection = 4,
-            .password       = "",
-        },
-    };
-    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_APSTA) );
-    ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_AP, &ap_cfg) );
-    ESP_ERROR_CHECK( esp_wifi_start() );
-    ESP_LOGI(TAG, "SoftAP \"%s\" started", ap_cfg.ap.ssid);
-}
-
-static void mount_spiffs(void)
-{
-    ESP_LOGI(TAG, "Mounting SPIFFS…");
-    esp_spiffs_conf_t conf = {
-        .base_path = "/spiffs",
-        .partition_label = NULL,
-        .max_files = 5,
-        .format_if_mount_failed = false
-    };
-    ESP_ERROR_CHECK( esp_spiffs_register(&conf) );
-    size_t total = 0, used = 0;
-    ESP_ERROR_CHECK( esp_spiffs_info(NULL, &total, &used) );
-    ESP_LOGI(TAG, "SPIFFS mounted: total=%u, used=%u", (unsigned)total, (unsigned)used);
-}
+static const char *TAG = "PianoGuard_Main";
 
 void app_main(void)
 {
-    ESP_LOGI(TAG, "Booting…");
-    ESP_ERROR_CHECK( nvs_flash_init() );
-    ESP_ERROR_CHECK( esp_event_loop_create_default() );
-    init_softap();
-    mount_spiffs();
-    start_http_server();
+    // Initialize NVS
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+      ESP_ERROR_CHECK(nvs_flash_erase());
+      ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+
+    // Initialize networking
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    // Assign pointers to the embedded certificates
+    if (load_certificates_from_flash() != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to load certificates! Halting.");
+        while(1) { vTaskDelay(pdMS_TO_TICKS(1000)); }
+    }
+
+    // Start application services that require certificates
+    mqtt_manager_start();
+
+    ESP_LOGI(TAG, "System setup complete.");
     while (true) {
         vTaskDelay(pdMS_TO_TICKS(10000));
     }

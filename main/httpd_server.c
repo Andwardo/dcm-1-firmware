@@ -5,7 +5,7 @@
  * Author:     R. Andrew Ballard
  * Date:       Jun 26 2025
  *
- * Implementation of the HTTP captive-portal server for PianoGuard DCM-1.
+ * HTTP captive-portal server.
  */
 
 #include "httpd_server.h"
@@ -23,23 +23,24 @@ static const char *TAG = "HTTPD";
 static httpd_handle_t server = NULL;
 
 /* URI handler prototypes */
-static esp_err_t root_get_handler      (httpd_req_t *req);
-static esp_err_t style_get_handler     (httpd_req_t *req);
-static esp_err_t code_get_handler      (httpd_req_t *req);
-static esp_err_t scan_post_handler     (httpd_req_t *req);
-static esp_err_t connect_post_handler  (httpd_req_t *req);
-static esp_err_t favicon_get_handler   (httpd_req_t *req);
+static esp_err_t root_get_handler     (httpd_req_t *req);
+static esp_err_t style_get_handler    (httpd_req_t *req);
+static esp_err_t code_get_handler     (httpd_req_t *req);
+static esp_err_t scan_post_handler    (httpd_req_t *req);
+static esp_err_t connect_post_handler (httpd_req_t *req);
+static esp_err_t favicon_get_handler  (httpd_req_t *req);
 
 esp_err_t start_http_server(void)
 {
     ESP_LOGI(TAG, ">> start_http_server()");
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    ESP_LOGI(TAG, "   default port=%d, stack_size=%d",
+    ESP_LOGI(TAG, "   port=%d, stack=%d",
              config.server_port, config.stack_size);
 
     esp_err_t err = httpd_start(&server, &config);
     if (err != ESP_OK) {
-        ESP_LOGE(TAG, "httpd_start failed: %s", esp_err_to_name(err));
+        ESP_LOGE(TAG, "httpd_start failed: %s",
+                 esp_err_to_name(err));
         return err;
     }
 
@@ -51,12 +52,10 @@ esp_err_t start_http_server(void)
         { "/connect",     HTTP_POST, connect_post_handler, NULL },
         { "/favicon.ico", HTTP_GET,  favicon_get_handler,  NULL },
     };
-
     for (size_t i = 0; i < sizeof(uris)/sizeof(uris[0]); ++i) {
         httpd_register_uri_handler(server, &uris[i]);
-        ESP_LOGI(TAG, "   registered URI %s", uris[i].uri);
+        ESP_LOGI(TAG, "   registered %s", uris[i].uri);
     }
-
     ESP_LOGI(TAG, "<< start_http_server() done");
     return ESP_OK;
 }
@@ -135,7 +134,7 @@ static esp_err_t connect_post_handler(httpd_req_t *req)
     const char *pwd  = cJSON_GetObjectItem(j, "password")->valuestring;
     cJSON_Delete(j);
 
-    ESP_LOGI(TAG, "connecting to SSID=\"%s\"", ssid);
+    ESP_LOGI(TAG, "Connecting to \"%s\"", ssid);
     wifi_config_t wc = {0};
     strncpy((char*)wc.sta.ssid, ssid, sizeof(wc.sta.ssid));
     strncpy((char*)wc.sta.password, pwd, sizeof(wc.sta.password));
@@ -145,7 +144,7 @@ static esp_err_t connect_post_handler(httpd_req_t *req)
     httpd_resp_set_type(req, "application/json");
     httpd_resp_sendstr(req, "{\"success\":true}");
     esp_restart();
-    return ESP_OK; // not reached
+    return ESP_OK;  // never reached
 }
 
 static esp_err_t favicon_get_handler(httpd_req_t *req)
