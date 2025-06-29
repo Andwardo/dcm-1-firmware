@@ -1,60 +1,58 @@
-// File: components/mqtt_manager/mqtt_manager.c
-//
-// Created on: 2025-06-15
-// Edited  on: 2025-06-15 (CDT)
-// Version:   v1.1
-// Author:    R. Andrew Ballard (c) 2025
-//
+/**
+ * File: mqtt_manager.c
+ * Description: Manages the secure MQTT connection using mTLS.
+ * Created on: 2025-06-15
+ * Edited on: 2025-06-24
+ * Version: v8.3.0
+ * Author: R. Andrew Ballard (c) 2025
+ */
 
 #include "mqtt_manager.h"
 #include "esp_log.h"
-#include "mqtt_client.h"    // ESP-IDF’s MQTT client API
+#include "mqtt_client.h"
 
 static const char *TAG = "MQTT_MANAGER";
-static esp_mqtt_client_handle_t s_client = NULL;
 
-void mqtt_manager_init(void)
+static void log_error_if_nonzero(const char *message, int error_code)
 {
-    // Configure your MQTT client here (URL, credentials, etc.)
-    esp_mqtt_client_config_t cfg = {
-        .broker = {
-            .address = {
-                .uri = CONFIG_MQTT_BROKER_URI,
-            },
-        },
-        // if you need username/password:
-        // .credentials = {
-        //     .username = CONFIG_MQTT_USERNAME,
-        //     .authentication = {
-        //         .password = CONFIG_MQTT_PASSWORD,
-        //     },
-        // },
+    if (error_code != 0) {
+        ESP_LOGE(TAG, "Last error %s: 0x%x", message, error_code);
+    }
+}
+
+static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
+{
+    esp_mqtt_event_handle_t event = event_data;
+    switch ((esp_mqtt_event_id_t)event_id) {
+    case MQTT_EVENT_CONNECTED:
+        ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED: Successfully connected to mqtts://dev1.pgapi.net:8883");
+        break;
+    case MQTT_EVENT_DISCONNECTED:
+        ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
+        break;
+    case MQTT_EVENT_ERROR:
+        ESP_LOGE(TAG, "MQTT_EVENT_ERROR");
+        if (event->error_handle->error_type == MQTT_ERROR_TYPE_TCP_TRANSPORT) {
+            log_error_if_nonzero("reported from esp-tls", event->error_handle->esp_tls_last_esp_err);
+            log_error_if_nonzero("reported from tls stack", event->error_handle->esp_tls_stack_err);
+        }
+        break;
+    default:
+        ESP_LOGD(TAG, "Other event id:%d", event->event_id);
+        break;
+    }
+}
+
+void start_mqtt_manager(void)
+{
+    const esp_mqtt_client_config_t mqtt_cfg = {
+        .broker.address.uri = "mqtts://dev1.pgapi.net:8883",
+        .credentials = {
+        }
     };
 
-    s_client = esp_mqtt_client_init(&cfg);
-    ESP_LOGI(TAG, "Initialized MQTT client");
-}
-
-void mqtt_manager_start(void)
-{
-    if (s_client == NULL) {
-        mqtt_manager_init();
-    }
-    esp_mqtt_client_start(s_client);
-    ESP_LOGI(TAG, "Started MQTT client");
-}
-
-void mqtt_manager_publish(const char *topic, const char *payload)
-{
-    if (s_client == NULL) {
-        ESP_LOGW(TAG, "Client not started; initializing now");
-        mqtt_manager_init();
-        esp_mqtt_client_start(s_client);
-    }
-    int msg_id = esp_mqtt_client_publish(s_client, topic, payload, 0, 1, 0);
-    if (msg_id >= 0) {
-        ESP_LOGI(TAG, "Published msg_id=%d to %s", msg_id, topic);
-    } else {
-        ESP_LOGE(TAG, "Failed to publish to %s", topic);
-    }
+    ESP_LOGI(TAG, "Initializing MQTT client for secure mTLS connection...");
+    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
+    esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
+    esp_mqtt_client_start(client);
 }

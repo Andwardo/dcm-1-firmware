@@ -1,17 +1,32 @@
 idf_component_register(
-    SRCS
-        "wifi_manager.c"
-        "http_app.c"
-    INCLUDE_DIRS
+    SRCS 
+        wifi_manager.c
+	src/wifi_manager.c
+	src/dns_server.c
+        src/http_app.c
+        src/json.c
+        src/nvs_sync.c
+    INCLUDE_DIRS 
         "include"
-    REQUIRES
-        esp_wifi
-    PRIV_REQUIRES
+    EMBED_FILES 
+        src/style.css 
+        src/code.js 
+        src/index.html 
+        src/ap.json
+        src/wifi0.svg 
+        src/wifi1.svg 
+        src/wifi2.svg 
+        src/wifi3.svg 
+        src/lock.svg 
+        src/settings.svg
+    REQUIRES 
+        esp_wifi 
+        log 
+        nvs_flash 
+        mdns 
+        wpa_supplicant 
+        lwip 
+        esp_http_server 
+        esp_netif 
         esp_event
-        esp_http_server
-        esp_netif
-        nvs_flash
-        cJSON
-        driver
-        lwip
 )

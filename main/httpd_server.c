@@ -1,28 +1,29 @@
 /*
  * Project:    PianoGuard_DCM-1
  * File:       main/httpd_server.c
- * Version:    8.2.43C
+ * Version:    8.4.2
  * Author:     R. Andrew Ballard
- * Date:       Jun 26 2025
+ * Date:       Jun 30 2025
  *
- * HTTP captive-portal server.
+ * HTTP captive-portal server serving files from SPIFFS.
  */
 
 #include "httpd_server.h"
 #include "esp_log.h"
 #include "esp_http_server.h"
+#include "esp_spiffs.h"
 #include "cJSON.h"
 #include "esp_wifi.h"
 #include <string.h>
-
-#ifndef MIN
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#endif
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 static const char *TAG = "HTTPD";
 static httpd_handle_t server = NULL;
 
 /* URI handler prototypes */
+static esp_err_t serve_file(httpd_req_t *req, const char *path, const char *content_type);
 static esp_err_t root_get_handler     (httpd_req_t *req);
 static esp_err_t style_get_handler    (httpd_req_t *req);
 static esp_err_t code_get_handler     (httpd_req_t *req);
@@ -30,17 +31,41 @@ static esp_err_t scan_post_handler    (httpd_req_t *req);
 static esp_err_t connect_post_handler (httpd_req_t *req);
 static esp_err_t favicon_get_handler  (httpd_req_t *req);
 
+/**
+ * @brief Mount SPIFFS partition at /spiffs.
+ */
+static esp_err_t mount_spiffs(void)
+{
+    esp_vfs_spiffs_conf_t conf = {
+        .base_path = "/spiffs",
+        .partition_label = "spiffs",
+        .max_files = 5,
+        .format_if_mount_failed = false
+    };
+    esp_err_t err = esp_vfs_spiffs_register(&conf);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to mount SPIFFS (%s)", esp_err_to_name(err));
+    } else {
+        size_t total = 0, used = 0;
+        esp_spiffs_info(conf.partition_label, &total, &used);
+        ESP_LOGI(TAG, "SPIFFS mounted: total=%"PRIu32", used=%"PRIu32, total, used);
+    }
+    return err;
+}
+
 esp_err_t start_http_server(void)
 {
     ESP_LOGI(TAG, ">> start_http_server()");
+    if (mount_spiffs() != ESP_OK) {
+        return ESP_FAIL;
+    }
+
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    ESP_LOGI(TAG, "   port=%d, stack=%d",
-             config.server_port, config.stack_size);
+    ESP_LOGI(TAG, "   port=%d, stack=%d", config.server_port, config.stack_size);
 
     esp_err_t err = httpd_start(&server, &config);
     if (err != ESP_OK) {
-        ESP_LOGE(TAG, "httpd_start failed: %s",
-                 esp_err_to_name(err));
+        ESP_LOGE(TAG, "httpd_start failed: %s", esp_err_to_name(err));
         return err;
     }
 
@@ -62,34 +87,50 @@ esp_err_t start_http_server(void)
 
 esp_err_t stop_http_server(void)
 {
+    esp_vfs_spiffs_unregister(NULL);
     return httpd_stop(server);
+}
+
+/**
+ * @brief Generic file‐serving helper.
+ */
+static esp_err_t serve_file(httpd_req_t *req, const char *path, const char *content_type)
+{
+    int fd = open(path, O_RDONLY);
+    if (fd < 0) {
+        ESP_LOGE(TAG, "Failed to open '%s'", path);
+        httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "File not found");
+        return ESP_FAIL;
+    }
+
+    struct stat st;
+    fstat(fd, &st);
+    httpd_resp_set_type(req, content_type);
+    const size_t buf_size = 1024;
+    char* buf = malloc(buf_size);
+    ssize_t r;
+    while ((r = read(fd, buf, buf_size)) > 0) {
+        httpd_resp_send_chunk(req, buf, r);
+    }
+    free(buf);
+    close(fd);
+    httpd_resp_send_chunk(req, NULL, 0);  // end response
+    return ESP_OK;
 }
 
 static esp_err_t root_get_handler(httpd_req_t *req)
 {
-    extern const char index_html_start[] asm("_binary_assets_index_html_start");
-    extern const char index_html_end[]   asm("_binary_assets_index_html_end");
-    size_t len = index_html_end - index_html_start;
-    httpd_resp_set_type(req, "text/html");
-    return httpd_resp_send(req, index_html_start, len);
+    return serve_file(req, "/spiffs/index.html", "text/html");
 }
 
 static esp_err_t style_get_handler(httpd_req_t *req)
 {
-    extern const char style_css_start[] asm("_binary_assets_style_css_start");
-    extern const char style_css_end[]   asm("_binary_assets_style_css_end");
-    size_t len = style_css_end - style_css_start;
-    httpd_resp_set_type(req, "text/css");
-    return httpd_resp_send(req, style_css_start, len);
+    return serve_file(req, "/spiffs/style.css", "text/css");
 }
 
 static esp_err_t code_get_handler(httpd_req_t *req)
 {
-    extern const char code_js_start[] asm("_binary_assets_code_js_start");
-    extern const char code_js_end[]   asm("_binary_assets_code_js_end");
-    size_t len = code_js_end - code_js_start;
-    httpd_resp_set_type(req, "application/javascript");
-    return httpd_resp_send(req, code_js_start, len);
+    return serve_file(req, "/spiffs/code.js", "application/javascript");
 }
 
 static esp_err_t scan_post_handler(httpd_req_t *req)
@@ -152,3 +193,4 @@ static esp_err_t favicon_get_handler(httpd_req_t *req)
     httpd_resp_set_status(req, "204 No Content");
     return httpd_resp_send(req, NULL, 0);
 }
+

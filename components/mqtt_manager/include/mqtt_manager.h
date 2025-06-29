@@ -1,38 +1,19 @@
-/*
- *  mqtt_manager.h
- *
- *  Created on: 2025-06-15
- *  Edited on: 2025-06-15 (CDT)
- *      Author: Andwardo
- *      Version: v1.1
+/**
+ * File: mqtt_manager.h
+ * Description: Public interface for the MQTT Connection Manager.
+ * Created on: 2025-06-15
+ * Edited on: 2025-06-24
+ * Version: v8.3.0
+ * Author: R. Andrew Ballard (c) 2025
  */
 
-#pragma once
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include "esp_event.h"
+#ifndef MQTT_MANAGER_H
+#define MQTT_MANAGER_H
 
 /**
- * @brief Initialize the MQTT manager.
+ * @brief Initializes and starts the MQTT client, connecting to the broker
+ * using the secure certificates loaded from flash.
  */
-void mqtt_manager_init(void);
+void start_mqtt_manager(void);
 
-/**
- * @brief Start the MQTT manager (connect + subscribe).
- */
-void mqtt_manager_start(void);
-
-/**
- * @brief Publish a payload to a topic.
- *
- * @param topic   Null-terminated MQTT topic string.
- * @param payload Null-terminated JSON or text payload.
- */
-void mqtt_manager_publish(const char *topic, const char *payload);
-
-#ifdef __cplusplus
-}
-#endif
+#endif // MQTT_MANAGER_H

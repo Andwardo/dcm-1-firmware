@@ -1,7 +1,8 @@
-# Name,   Type, SubType, Offset,   Size, Flags
-nvs,      data, nvs,       ,        24K,
-otadata,  data, ota,       ,        8K,
-phy_init, data, phy,       ,        4K,
-certs,    data, spiffs,    ,        24K,  readonly
-ota_0,    app,  ota_0,     ,        4000K,
-ota_1,    app,  ota_1,     ,        4000K,
+# Name,     Type, SubType, Offset,  Size,  Flags
+nvs,        data, nvs,     ,        24K,
+otadata,    data, ota,     ,        8K,
+phy_init,   data, phy,     ,        4K,
+certs,      data, spiffs,  ,        24K,   readonly
+spiffs,     data, spiffs,  ,        64K,
+ota_0,      app,  ota_0,   ,        3840K,
+ota_1,      app,  ota_1,   ,        3840K,
