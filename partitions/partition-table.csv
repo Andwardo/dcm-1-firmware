@@ -2,8 +2,8 @@
 # File: partitions/partition-table.csv
 # Description: Custom partition layout for PianoGuard DCM-1 (8MB Flash)
 # Created on: 2025-06-25
-# Edited on:  2025-06-29
-# Version: v8.5.1
+# Edited on:  2025-06-30
+# Version: v8.5.2
 # Author: R. Andrew Ballard (c) 2025
 #
 # Name,   Type, SubType, Offset,   Size, Flags
@@ -12,5 +12,5 @@ otadata,  data, ota,       ,        8K,
 phy_init, data, phy,       ,        4K,
 certs,    data, spiffs,    ,        24K,  readonly
 spiffs,   data, spiffs,    ,        64K,
-ota_0,    app,  ota_0,     ,        4032K,
-ota_1,    app,  ota_1,     ,        4032K,
+ota_0,    app,  ota_0,     ,        3968K,
+ota_1,    app,  ota_1,     ,        3968K,

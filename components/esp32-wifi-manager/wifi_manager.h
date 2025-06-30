@@ -48,6 +48,13 @@ void wifi_manager_init(void);
 BaseType_t wifi_manager_send_message(const wifi_manager_message_t *msg);
 EventGroupHandle_t wifi_manager_get_event_group(void);
 
+/**
+ *  added necessary declaration
+*/
+
+void wifi_manager_connect_async(const char *ssid, const char *password);
+
+
 #ifdef __cplusplus
 }
 #endif

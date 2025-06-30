@@ -1,20 +1,22 @@
+#
+# File: main/CMakeLists.txt
+# Description: Build script for the main application component.
+# Created on: 2025-06-25
+# Edited on:  2025-06-30
+# Version: v8.5.6
+# Author: R. Andrew Ballard (c) 2025
+#
+
 idf_component_register(
     SRCS
         "main.c"
-        "httpd_server.c"
     INCLUDE_DIRS
-        "include"
+        "."
     PRIV_REQUIRES
+        nvs_flash
         app_logic
         board_manager
+        esp32-wifi-manager
         mqtt_manager
-        cJSON
-        esp_event
-        esp_http_server
-        esp_netif
-        esp_system
-        esp_wifi
-        log
-        nvs_flash
-        spiffs
+        cert_loader
 )

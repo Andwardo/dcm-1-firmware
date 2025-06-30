@@ -107,3 +107,4 @@ static void wifi_manager_task(void *pvParameters) {
                 }
             } 
         }
+}
