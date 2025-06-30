@@ -3,7 +3,7 @@
 # Description: Top-level build script for the PianoGuard_DCM-1 project.
 # Created on: 2025-06-25
 # Edited on:  2025-06-30
-# Version: v8.6.1
+# Version: v8.6.2
 # Author: R. Andrew Ballard (c) 2025
 #
 cmake_minimum_required(VERSION 3.16)
