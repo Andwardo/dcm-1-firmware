@@ -3,45 +3,84 @@
  * Description: Main entry point for the PianoGuard DCM-1 application.
  * Created on: 2025-06-25
  * Edited on:  2025-06-30
- * Version: v8.7.0
+ * Version: v8.6.3
  * Author: R. Andrew Ballard (c) 2025
  */
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_log.h"
+#include <stdio.h>
+#include <string.h>
+
 #include "nvs_flash.h"
+#include "esp_event.h"
+#include "esp_log.h"
 
-// Your Custom Component Headers
-#include "mqtt_manager.h"
-#include "cert_loader.h"
-#include "board_manager.h"
 #include "wifi_manager.h"
+#include "board_manager.h"
 #include "app_logic.h"
+#include "mqtt_manager.h"
 
-static const char *TAG = "PIANOGUARD_MAIN";
+static const char *TAG = "MAIN";
 
-void app_main(void)
-{
-    ESP_LOGI(TAG, "Starting PianoGuard Firmware v8.7.0");
+static bool wifi_credentials_exist(void) {
+    nvs_handle_t nvs;
+    esp_err_t err = nvs_open("nvs.net80211", NVS_READONLY, &nvs);
+    if (err != ESP_OK) return false;
 
-    // 1. Initialize NVS (must be first)
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-      ESP_ERROR_CHECK(nvs_flash_erase());
-      ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
+    uint8_t ssid[33] = {0};
+    size_t required_size = sizeof(ssid);
+    err = nvs_get_blob(nvs, "sta.ssid", ssid, &required_size);
+    nvs_close(nvs);
 
-    // 2. Initialize Hardware Abstraction Layer
-    ESP_ERROR_CHECK(board_manager_init());
+    return (err == ESP_OK && strlen((char *)ssid) > 0);
+}
 
-    // 3. Start the Wi-Fi Manager. It will handle provisioning and connecting.
+void app_main(void) {
+    ESP_LOGI(TAG, "Initializing NVS...");
+    ESP_ERROR_CHECK(nvs_flash_init());
+
+    ESP_LOGI(TAG, "Creating default event loop...");
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    ESP_LOGI(TAG, "Initializing board and Wi-Fi manager...");
+    board_manager_init();
     wifi_manager_init();
 
-    // 4. Start the main application logic task. It will wait internally for
-    //    the Wi-Fi Manager to establish a connection before running its main loop.
-    app_logic_init();
+    if (wifi_credentials_exist()) {
+        ESP_LOGI(TAG, "Stored Wi-Fi credentials found. Attempting connection...");
+        nvs_handle_t nvs;
+        wifi_config_t config = {0};
+        if (nvs_open("nvs.net80211", NVS_READONLY, &nvs) == ESP_OK) {
+            size_t ssid_len = sizeof(config.sta.ssid);
+            size_t pass_len = sizeof(config.sta.password);
+            nvs_get_blob(nvs, "sta.ssid", config.sta.ssid, &ssid_len);
+            nvs_get_blob(nvs, "sta.passwd", config.sta.password, &pass_len);
+            nvs_close(nvs);
+        }
+        wifi_manager_message_t msg = {
+            .msg_id = WIFI_MANAGER_MSG_CONNECT_STA,
+            .sta_config = config
+        };
+        wifi_manager_send_message(&msg);
+    } else {
+        ESP_LOGW(TAG, "No stored credentials. Starting provisioning...");
+        wifi_manager_message_t msg = {
+            .msg_id = WIFI_MANAGER_MSG_START_PROVISIONING
+        };
+        wifi_manager_send_message(&msg);
+    }
 
-    ESP_LOGI(TAG, "app_main initialization complete. Handing off control to component tasks.");
+    // Wait for STA connection before continuing
+    EventBits_t bits;
+    ESP_LOGI(TAG, "Waiting for Wi-Fi STA connection...");
+    bits = xEventGroupWaitBits(
+        wifi_manager_get_event_group(),
+        WIFI_MANAGER_STA_CONNECTED_BIT,
+        pdFALSE,
+        pdTRUE,
+        portMAX_DELAY
+    );
+
+    ESP_LOGI(TAG, "Wi-Fi connected. Initializing app components...");
+    app_logic_init();
+    mqtt_manager_init();
 }
