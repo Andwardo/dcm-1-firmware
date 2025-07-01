@@ -11,5 +11,4 @@ idf_component_register(
     INCLUDE_DIRS "include"
     PRIV_REQUIRES 
         mqtt
-        cert_loader #<-- Add dependency on our new component
 )

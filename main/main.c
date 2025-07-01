@@ -9,15 +9,16 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>        // if used
 
-#include "nvs_flash.h"
-#include "esp_event.h"
 #include "esp_log.h"
+#include "esp_event.h"
+#include "nvs_flash.h"
 
 #include "wifi_manager.h"
+#include "mqtt_manager.h"
 #include "board_manager.h"
 #include "app_logic.h"
-#include "mqtt_manager.h"
 
 static const char *TAG = "MAIN";
 
@@ -70,15 +71,14 @@ void app_main(void) {
     }
 
     // Wait for STA connection before continuing
-    EventBits_t bits;
     ESP_LOGI(TAG, "Waiting for Wi-Fi STA connection...");
-    bits = xEventGroupWaitBits(
-        wifi_manager_get_event_group(),
-        WIFI_MANAGER_STA_CONNECTED_BIT,
-        pdFALSE,
-        pdTRUE,
-        portMAX_DELAY
-    );
+    xEventGroupWaitBits(
+    	wifi_manager_get_event_group(),
+    	WIFI_MANAGER_STA_CONNECTED_BIT,
+    	pdFALSE,
+    	pdTRUE,
+    	portMAX_DELAY
+     );
 
     ESP_LOGI(TAG, "Wi-Fi connected. Initializing app components...");
     app_logic_init();

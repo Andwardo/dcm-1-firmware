@@ -3,8 +3,9 @@
 # Description: Corrected build script for the esp32-wifi-manager component.
 # Created on: 2025-06-25
 # Edited on:  2025-06-29
-# Version: v8.5.2
+# Version: v8.5.3
 # Author: R. Andrew Ballard (c) 2025
+# Added mqtt_manager to PRIV_REQUIRES
 #
 idf_component_register(
     SRCS
@@ -26,4 +27,5 @@ idf_component_register(
         cJSON
         lwip
 	spiffs
+	mqtt_manager
 )

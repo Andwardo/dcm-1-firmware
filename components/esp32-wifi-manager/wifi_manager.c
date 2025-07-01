@@ -1,14 +1,15 @@
-/*
+/**
  * File: components/esp32-wifi-manager/wifi_manager.c
  * Description: Message-driven Wi-Fi management component.
  *
  * Created on: 2025-06-18
  * Edited on:  2025-06-30
  *
- * Version: v8.2.21
+ * Version: v8.2.23
  *
  * Author: R. Andrew Ballard (c) 2025
- */
+ * Deleted duplicate static const char *TAG 
+*/
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -28,9 +29,20 @@
 #include "http_app.h"
 #include "wifi_manager.h"
 
+#include "mqtt_manager.h"
+
+static const char *TAG = "MQTT_MANAGER";
+
+static esp_netif_t *s_netif_sta = NULL;
+
+void mqtt_manager_init(void) {
+    ESP_LOGI(TAG, "MQTT manager initialized");
+    // Add actual MQTT setup code here
+}
+
+
 #define WIFI_PROV_SSID "PianoGuard-Setup"
 
-static const char *TAG = "WIFI_MANAGER";
 
 static QueueHandle_t s_wifi_manager_queue;
 static EventGroupHandle_t s_wifi_event_group;
@@ -53,15 +65,21 @@ static void wifi_manager_start_softap(void) {
 }
 
 static void wifi_manager_connect_sta(const wifi_config_t *config) {
+    ESP_LOGI(TAG, "Connecting to SSID: %s", config->sta.ssid);
+
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, config));
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, (wifi_config_t *)config));  // cast to remove const warning
     ESP_ERROR_CHECK(esp_wifi_start());
-    esp_wifi_connect();
+
+    esp_err_t err = esp_wifi_connect();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "esp_wifi_connect() failed: %s", esp_err_to_name(err));
+    }
 }
 
 void wifi_manager_start_provisioning(void) {
     wifi_manager_start_softap();
-    http_app_start();
+    http_app_start(true);  // Pass required bool argument
 }
 
 // --- Public API ---
@@ -79,6 +97,16 @@ BaseType_t wifi_manager_send_message(const wifi_manager_message_t *msg) {
 
 EventGroupHandle_t wifi_manager_get_event_group(void) {
     return s_wifi_event_group;
+}
+
+void wifi_manager_connect_async(const char *ssid, const char *password) {
+    wifi_manager_message_t msg = {
+        .msg_id = WIFI_MANAGER_MSG_CONNECT_STA
+    };
+    strlcpy((char *)msg.sta_config.sta.ssid, ssid, sizeof(msg.sta_config.sta.ssid));
+    strlcpy((char *)msg.sta_config.sta.password, password, sizeof(msg.sta_config.sta.password));
+
+    wifi_manager_send_message(&msg);
 }
 
 // --- Event Handler ---
@@ -109,9 +137,8 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 // --- Task Loop ---
 
 static void wifi_manager_task(void *pvParameters) {
-    ESP_ERROR_CHECK(esp_netif_create_default_wifi_ap());
-    ESP_ERROR_CHECK(esp_netif_create_default_wifi_sta());
-
+    esp_netif_create_default_wifi_ap();
+    s_netif_sta = esp_netif_create_default_wifi_sta();
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
@@ -137,4 +164,8 @@ static void wifi_manager_task(void *pvParameters) {
             }
         }
     }
+}
+
+esp_netif_t* wifi_manager_get_esp_netif_sta(void) {
+    return s_netif_sta;
 }

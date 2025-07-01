@@ -3,8 +3,9 @@
  * Description: Header for managing the secure MQTT connection using mTLS.
  * Created on: 2025-06-15
  * Edited on:  2025-06-30
- * Version: v8.5.5
+ * Version: v8.5.6
  * Author: R. Andrew Ballard (c) 2025
+ * Added prototype for the mqtt_manager_init
  */
 
 #ifndef MQTT_MANAGER_H
@@ -15,6 +16,13 @@ extern "C" {
 #endif
 
 /**
+ * @brief Added missing prototype declaration
+ *       Not sure if it belongs in this race position
+ */
+void mqtt_manager_init(void);
+
+/**
+ *
  * @brief Starts the MQTT manager by initializing and connecting the MQTT client
  *        using mTLS certificates loaded from flash.
  */

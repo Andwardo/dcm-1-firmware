@@ -4,7 +4,7 @@
  *  Created on: 2017–2020 (Original by Tony Pottier)
  *  Edited on: 2025-06-30
  *      Author: Andwardo
- *      Version: v1.4
+ *      Version: v1.5
  */
 
 #ifndef WIFI_MANAGER_H_INCLUDED
@@ -40,6 +40,9 @@ void wifi_manager_init(void);
 BaseType_t wifi_manager_send_message(const wifi_manager_message_t *msg);
 EventGroupHandle_t wifi_manager_get_event_group(void);
 void wifi_manager_start_provisioning(void);
+void wifi_manager_connect_async(const char *ssid, const char *password);  // <-- Added for async STA connect
+esp_netif_t* wifi_manager_get_esp_netif_sta(void);
+
 
 #ifdef __cplusplus
 }
