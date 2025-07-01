@@ -2,18 +2,19 @@
  * File: main.c
  * Description: Main entry point for the PianoGuard DCM-1 application.
  * Created on: 2025-06-25
- * Edited on:  2025-06-30
- * Version: v8.6.3
+ * Edited on:  2025-07-01
+ * Version: v8.6.5
  * Author: R. Andrew Ballard (c) 2025
  */
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>        // if used
+#include <stdlib.h>
 
 #include "esp_log.h"
 #include "esp_event.h"
 #include "nvs_flash.h"
+#include "esp_spiffs.h"
 
 #include "wifi_manager.h"
 #include "mqtt_manager.h"
@@ -39,6 +40,15 @@ void app_main(void) {
     ESP_LOGI(TAG, "Initializing NVS...");
     ESP_ERROR_CHECK(nvs_flash_init());
 
+    ESP_LOGI(TAG, "Mounting SPIFFS for certificate access...");
+    esp_vfs_spiffs_conf_t spiffs_conf = {
+        .base_path = "/spiffs",
+        .partition_label = NULL,
+        .max_files = 4,
+        .format_if_mount_failed = false
+    };
+    ESP_ERROR_CHECK(esp_vfs_spiffs_register(&spiffs_conf));
+
     ESP_LOGI(TAG, "Creating default event loop...");
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
@@ -46,10 +56,13 @@ void app_main(void) {
     board_manager_init();
     wifi_manager_init();
 
+    wifi_manager_message_t msg = {0};
+
     if (wifi_credentials_exist()) {
-        ESP_LOGI(TAG, "Stored Wi-Fi credentials found. Attempting connection...");
-        nvs_handle_t nvs;
+        ESP_LOGI(TAG, "Stored Wi-Fi credentials found. Attempting STA connection...");
+
         wifi_config_t config = {0};
+        nvs_handle_t nvs;
         if (nvs_open("nvs.net80211", NVS_READONLY, &nvs) == ESP_OK) {
             size_t ssid_len = sizeof(config.sta.ssid);
             size_t pass_len = sizeof(config.sta.password);
@@ -57,30 +70,26 @@ void app_main(void) {
             nvs_get_blob(nvs, "sta.passwd", config.sta.password, &pass_len);
             nvs_close(nvs);
         }
-        wifi_manager_message_t msg = {
-            .msg_id = WIFI_MANAGER_MSG_CONNECT_STA,
-            .sta_config = config
-        };
-        wifi_manager_send_message(&msg);
+
+        msg.msg_id = WIFI_MANAGER_MSG_CONNECT_STA;
+        msg.sta_config = config;
     } else {
         ESP_LOGW(TAG, "No stored credentials. Starting provisioning...");
-        wifi_manager_message_t msg = {
-            .msg_id = WIFI_MANAGER_MSG_START_PROVISIONING
-        };
-        wifi_manager_send_message(&msg);
+        msg.msg_id = WIFI_MANAGER_MSG_START_PROVISIONING;
     }
 
-    // Wait for STA connection before continuing
+    wifi_manager_send_message(&msg);
+
     ESP_LOGI(TAG, "Waiting for Wi-Fi STA connection...");
     xEventGroupWaitBits(
-    	wifi_manager_get_event_group(),
-    	WIFI_MANAGER_STA_CONNECTED_BIT,
-    	pdFALSE,
-    	pdTRUE,
-    	portMAX_DELAY
-     );
+        wifi_manager_get_event_group(),
+        WIFI_MANAGER_STA_CONNECTED_BIT,
+        pdFALSE,
+        pdTRUE,
+        portMAX_DELAY
+    );
 
-    ESP_LOGI(TAG, "Wi-Fi connected. Initializing app components...");
+    ESP_LOGI(TAG, "Wi-Fi connected. Initializing application...");
     app_logic_init();
     mqtt_manager_init();
 }

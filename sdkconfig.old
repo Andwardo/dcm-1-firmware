@@ -1936,7 +1936,7 @@ CONFIG_WIFI_PROV_STA_ALL_CHANNEL_SCAN=y
 #
 # MQTT Manager Configuration
 #
-CONFIG_MQTT_BROKER_URI="mqtts://your-broker.example.com"
+CONFIG_MQTT_BROKER_URI="mqtts://45.56.60.50"
 # end of MQTT Manager Configuration
 
 #

@@ -13,6 +13,9 @@
 #ifndef WIFI_MANAGER_H_INCLUDED
 #define WIFI_MANAGER_H_INCLUDED
 
+#ifndef WIFI_PROV_SSID
+#define WIFI_PROV_SSID
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "esp_netif.h"
