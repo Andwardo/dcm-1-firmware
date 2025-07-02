@@ -2,8 +2,8 @@
  * File: main.c
  * Description: Main entry point for the PianoGuard DCM-1 application.
  * Created on: 2025-06-25
- * Edited on:  2025-07-01
- * Version: v8.6.5
+ * Edited on:  2025-07-03
+ * Version: v8.6.6
  * Author: R. Andrew Ballard (c) 2025
  */
 
@@ -14,7 +14,6 @@
 #include "esp_log.h"
 #include "esp_event.h"
 #include "nvs_flash.h"
-#include "esp_spiffs.h"
 
 #include "wifi_manager.h"
 #include "mqtt_manager.h"
@@ -39,15 +38,6 @@ static bool wifi_credentials_exist(void) {
 void app_main(void) {
     ESP_LOGI(TAG, "Initializing NVS...");
     ESP_ERROR_CHECK(nvs_flash_init());
-
-    ESP_LOGI(TAG, "Mounting SPIFFS for certificate access...");
-    esp_vfs_spiffs_conf_t spiffs_conf = {
-        .base_path = "/spiffs",
-        .partition_label = NULL,
-        .max_files = 4,
-        .format_if_mount_failed = false
-    };
-    ESP_ERROR_CHECK(esp_vfs_spiffs_register(&spiffs_conf));
 
     ESP_LOGI(TAG, "Creating default event loop...");
     ESP_ERROR_CHECK(esp_event_loop_create_default());
