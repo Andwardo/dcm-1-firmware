@@ -4,34 +4,58 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
 #include "esp_wifi.h"
+#include "esp_netif.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// Event bit indicating STA is connected
-#define WIFI_MANAGER_STA_CONNECTED_BIT    BIT0
+// Event bit to signal the station (STA) is connected
+#define WIFI_MANAGER_STA_CONNECTED_BIT  BIT0
 
-// Message types used by the Wi-Fi Manager task
+// Messages for Wi-Fi Manager task operations
 typedef enum {
-    WIFI_MANAGER_MSG_CONNECT_STA,
-    WIFI_MANAGER_MSG_START_PROVISIONING
+    WIFI_MANAGER_MSG_CONNECT_STA,        // Connect in station mode with provided credentials
+    WIFI_MANAGER_MSG_START_PROVISIONING  // Start SoftAP and captive-portal provisioning
 } wifi_manager_message_e;
 
-// Message struct passed to the Wi-Fi Manager task
+// Structure to pass messages into the Wi-Fi Manager task
 typedef struct {
-    int msg_id;
-    wifi_config_t sta_config;
+    wifi_manager_message_e msg_id;  // Message type
+    wifi_config_t          sta_config;
 } wifi_manager_message_t;
 
-// Initialize the Wi-Fi manager
+/**
+ * @brief Initialize Wi-Fi Manager internals: queue, event group, netif, handlers.
+ */
 void wifi_manager_init(void);
 
-// Send a message to the Wi-Fi manager task
-BaseType_t wifi_manager_send_message(void *msg);
+/**
+ * @brief Initialize internals and immediately start provisioning mode (SoftAP + portal).
+ */
+void wifi_manager_start(void);
 
-// Retrieve the event group for Wi-Fi events
+/**
+ * @brief Enqueue a message to the Wi-Fi Manager task.
+ *
+ * @param msg Pointer to message struct (type + optional STA config).
+ * @return pdTRUE if queued successfully, pdFALSE otherwise.
+ */
+BaseType_t wifi_manager_send_message(const wifi_manager_message_t *msg);
+
+/**
+ * @brief Retrieve the event group handle for STA connection bits.
+ *
+ * Used to wait for WIFI_MANAGER_STA_CONNECTED_BIT.
+ */
 EventGroupHandle_t wifi_manager_get_event_group(void);
+
+/**
+ * @brief Retrieve the esp_netif handle for the STA interface.
+ *
+ * Useful for DNS responder to query the AP interface.
+ */
+esp_netif_t *wifi_manager_get_esp_netif_sta(void);
 
 #ifdef __cplusplus
 }

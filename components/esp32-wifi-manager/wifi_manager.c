@@ -105,7 +105,11 @@ EventGroupHandle_t wifi_manager_get_event_group(void) {
     return wifi_event_group;
 }
 
-BaseType_t wifi_manager_send_message(void *msg) {
+esp_netif_t *wifi_manager_get_esp_netif_sta(void) {
+    return netif_sta;
+}
+
+BaseType_t wifi_manager_send_message(const wifi_manager_message_t *msg) {
     return xQueueSend(wifi_manager_queue, msg, pdMS_TO_TICKS(100));
 }
 
@@ -129,4 +133,20 @@ void wifi_manager_init(void) {
 
     xTaskCreate(wifi_manager_task, "wifi_manager_task", WIFI_MANAGER_TASK_STACK_SIZE, NULL,
                 WIFI_MANAGER_TASK_PRIORITY, NULL);
+}
+/**
+ * @brief Initialize the Wi-Fi manager internals, then trigger
+ *        provisioning mode (SoftAP + captive-portal).
+ */
+void wifi_manager_start(void) {
+    // 1. Run the top-level init (queue, netif, event handlers)
+    wifi_manager_init();
+
+    // 2. Enqueue the “start provisioning” message
+    wifi_manager_message_t msg = {
+        .msg_id = WIFI_MANAGER_MSG_START_PROVISIONING
+    };
+    if (wifi_manager_send_message(&msg) != pdTRUE) {
+        ESP_LOGE(TAG, "Failed to queue provisioning message");
+    }
 }

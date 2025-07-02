@@ -10,11 +10,10 @@ idf_component_register(
 
     REQUIRES
         esp_wifi
-
+	esp_http_server
     PRIV_REQUIRES
         cJSON
         esp_event
-        esp_http_server
         esp_netif
         lwip
         mqtt_manager
