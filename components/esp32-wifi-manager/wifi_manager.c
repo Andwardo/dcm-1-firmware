@@ -2,8 +2,8 @@
  * File: wifi_manager.c
  * Description: Wi-Fi manager implementation for PianoGuard DCM-1
  * Created on: 2025-06-18
- * Edited on:  2025-07-03
- * Version: v8.6.9
+ * Edited on:  2025-07-07
+ * Version: v8.6.10
  * Author: R. Andrew Ballard (c) 2025
  */
 
@@ -15,6 +15,10 @@
 #include "freertos/queue.h"
 #include "freertos/event_groups.h"
 #include <string.h>
+
+// Captive-portal HTTP and DNS
+#include "http_app.h"
+#include "dns_server.h"
 
 static const char *TAG = "WIFI_MANAGER";
 
@@ -73,12 +77,20 @@ static void wifi_manager_task(void *param) {
                             .authmode = WIFI_AUTH_WPA_WPA2_PSK
                         }
                     };
+
                     if (strlen((char *)ap_config.ap.password) == 0) {
                         ap_config.ap.authmode = WIFI_AUTH_OPEN;
                     }
+
                     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
                     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &ap_config));
                     ESP_ERROR_CHECK(esp_wifi_start());
+
+                    // Start captive-portal services
+                    ESP_LOGI(TAG, "Launching HTTP captive-portal");
+                    http_app_start(true);
+                    ESP_LOGI(TAG, "Launching DNS captive-portal");
+                    dns_server_start();
                     break;
                 }
                 default:
@@ -101,7 +113,7 @@ void wifi_manager_init(void) {
     ESP_LOGI(TAG, "Initializing Wi-Fi Manager...");
 
     wifi_manager_queue = xQueueCreate(WIFI_MANAGER_QUEUE_SIZE, sizeof(wifi_manager_message_t));
-    wifi_event_group = xEventGroupCreate();
+    wifi_event_group  = xEventGroupCreate();
 
     ESP_ERROR_CHECK(esp_netif_init());
     // Default event loop already created in main; do not recreate here

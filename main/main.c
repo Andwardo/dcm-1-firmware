@@ -2,8 +2,8 @@
  * File: main.c
  * Description: Main entry point for the PianoGuard DCM-1 application.
  * Created on: 2025-06-25
- * Edited on:  2025-07-03
- * Version: v8.6.6
+ * Edited on:  2025-07-02
+ * Version: v8.6.7
  * Author: R. Andrew Ballard (c) 2025
  */
 
@@ -42,9 +42,13 @@ void app_main(void) {
     ESP_LOGI(TAG, "Creating default event loop...");
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    ESP_LOGI(TAG, "Initializing board and Wi-Fi manager...");
+    ESP_LOGI(TAG, "Initializing board manager");
     board_manager_init();
-    wifi_manager_init();
+
+//  wifi_manager_init();  // SWITCHED TO wifi_manager_start(NULL)
+    
+    ESP_LOGI(TAG, "Starting Wi-Fi manager (will start AP+portal if no creds)...");
+    wifi_manager_start(NULL);
 
     wifi_manager_message_t msg = {0};
 
