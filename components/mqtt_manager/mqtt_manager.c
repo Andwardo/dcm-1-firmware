@@ -3,7 +3,7 @@
  * Description: MQTT client manager for PianoGuard DCM-1
  * Created on: 2025-06-20
  * Edited on:  2025-07-01
- * Version: v8.6.5
+ * Version: v8.6.8
  * Author: R. Andrew Ballard (c) 2025
  */
 
@@ -11,45 +11,37 @@
 #include "esp_log.h"
 #include "mqtt_client.h"
 #include "esp_spiffs.h"
-#include "esp_err.h"
-#include "esp_tls.h"
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "string.h"
+#include "stdio.h"
+#include "stdlib.h"
 
 static const char *TAG = "MQTT_MANAGER";
 static esp_mqtt_client_handle_t client = NULL;
 
-#define ROOT_CA_PATH   "/spiffs/root_ca.pem"
-#define CLIENT_CRT_PATH "/spiffs/client.crt"
-#define CLIENT_KEY_PATH "/spiffs/client.key"
-
-static char *load_file(const char *path)
-{
+static char *read_cert_file(const char *path) {
     FILE *f = fopen(path, "r");
     if (!f) {
-        ESP_LOGE(TAG, "Failed to open file: %s", path);
+        ESP_LOGE(TAG, "Failed to open cert file: %s", path);
         return NULL;
     }
+
     fseek(f, 0, SEEK_END);
-    long len = ftell(f);
+    long size = ftell(f);
     rewind(f);
 
-    char *buf = malloc(len + 1);
-    if (!buf) {
-        ESP_LOGE(TAG, "Memory allocation failed for file: %s", path);
+    char *buffer = calloc(1, size + 1);
+    if (!buffer) {
+        ESP_LOGE(TAG, "Failed to allocate memory for cert: %s", path);
         fclose(f);
         return NULL;
     }
 
-    size_t read = fread(buf, 1, len, f);
-    buf[read] = '\0';
+    fread(buffer, 1, size, f);
     fclose(f);
-    return buf;
+    return buffer;
 }
 
-static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
-{
+static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
     ESP_LOGD(TAG, "MQTT event id: %" PRIi32, event_id);
     esp_mqtt_event_handle_t event = event_data;
 
@@ -63,8 +55,8 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         case MQTT_EVENT_ERROR:
             ESP_LOGE(TAG, "MQTT_EVENT_ERROR");
             if (event->error_handle) {
-                ESP_LOGE(TAG, "esp-tls err: 0x%x", event->error_handle->esp_tls_last_esp_err);
-                ESP_LOGE(TAG, "TLS stack err: 0x%x", event->error_handle->esp_tls_stack_err);
+                ESP_LOGE(TAG, "esp-tls error: 0x%x", event->error_handle->esp_tls_last_esp_err);
+                ESP_LOGE(TAG, "TLS stack error: 0x%x", event->error_handle->esp_tls_stack_err);
                 ESP_LOGE(TAG, "Errno: %d (%s)", event->error_handle->esp_transport_sock_errno,
                          strerror(event->error_handle->esp_transport_sock_errno));
             }
@@ -74,23 +66,26 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     }
 }
 
-void mqtt_manager_init(void)
-{
-    ESP_LOGI(TAG, "Loading MQTT certs from SPIFFS...");
+void mqtt_manager_init(void) {
+    ESP_LOGI(TAG, "Mounting SPIFFS for certificate loading...");
+    esp_vfs_spiffs_conf_t conf = {
+        .base_path = "/spiffs",
+        .partition_label = "spiffs",
+        .max_files = 5,
+        .format_if_mount_failed = true
+    };
+    ESP_ERROR_CHECK(esp_vfs_spiffs_register(&conf));
 
-    char *root_ca = load_file(ROOT_CA_PATH);
-    char *client_crt = load_file(CLIENT_CRT_PATH);
-    char *client_key = load_file(CLIENT_KEY_PATH);
+    char *root_ca    = read_cert_file("/spiffs/root_ca.pem");
+    char *client_crt = read_cert_file("/spiffs/client.crt");
+    char *client_key = read_cert_file("/spiffs/client.key");
 
     if (!root_ca || !client_crt || !client_key) {
-        ESP_LOGE(TAG, "Failed to load certificates from SPIFFS. MQTT will not start.");
-        free(root_ca);
-        free(client_crt);
-        free(client_key);
+        ESP_LOGE(TAG, "One or more certificates failed to load. MQTT init aborted.");
         return;
     }
 
-    const esp_mqtt_client_config_t mqtt_cfg = {
+    esp_mqtt_client_config_t mqtt_cfg = {
         .uri = "mqtts://dev1.pgapi.net:8883",
         .cert_pem = root_ca,
         .client_cert_pem = client_crt,
@@ -101,8 +96,5 @@ void mqtt_manager_init(void)
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(client);
 
-    // Free certs after client copies them (ESP MQTT stores them internally)
-    free(root_ca);
-    free(client_crt);
-    free(client_key);
+    ESP_LOGI(TAG, "MQTT client started.");
 }
