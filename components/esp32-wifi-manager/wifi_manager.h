@@ -1,12 +1,3 @@
-/**
- * File: wifi_manager.h
- * Description: Wi-Fi manager header for PianoGuard DCM-1
- * Created on: 2025-06-18
- * Edited on:  2025-07-01
- * Version: v8.6.8
- * Author: R. Andrew Ballard (c) 2025
- */
-
 #ifndef WIFI_MANAGER_H_INCLUDED
 #define WIFI_MANAGER_H_INCLUDED
 
@@ -17,6 +8,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+// Event bit indicating STA is connected
+#define WIFI_MANAGER_STA_CONNECTED_BIT    BIT0
 
 // Message types used by the Wi-Fi Manager task
 typedef enum {
@@ -30,9 +24,13 @@ typedef struct {
     wifi_config_t sta_config;
 } wifi_manager_message_t;
 
-// Function declarations
+// Initialize the Wi-Fi manager
 void wifi_manager_init(void);
+
+// Send a message to the Wi-Fi manager task
 BaseType_t wifi_manager_send_message(void *msg);
+
+// Retrieve the event group for Wi-Fi events
 EventGroupHandle_t wifi_manager_get_event_group(void);
 
 #ifdef __cplusplus

@@ -2,44 +2,25 @@
  * File: mqtt_manager.c
  * Description: MQTT client manager for PianoGuard DCM-1
  * Created on: 2025-06-20
- * Edited on:  2025-07-01
- * Version: v8.6.8
+ * Edited on:  2025-07-02
+ * Version: v8.6.12
  * Author: R. Andrew Ballard (c) 2025
  */
 
 #include "mqtt_manager.h"
 #include "esp_log.h"
 #include "mqtt_client.h"
-#include "esp_spiffs.h"
-#include "string.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include <string.h>
+#include <stdlib.h>
+#include <inttypes.h>
+
+// Embedded certificate data (generated via xxd -i)
+#include "root_ca.h"    // defines unsigned char root_ca_pem[] and unsigned int root_ca_pem_len
+#include "client_crt.h" // defines unsigned char client_crt[] and unsigned int client_crt_len
+#include "client_key.h" // defines unsigned char client_key[] and unsigned int client_key_len
 
 static const char *TAG = "MQTT_MANAGER";
 static esp_mqtt_client_handle_t client = NULL;
-
-static char *read_cert_file(const char *path) {
-    FILE *f = fopen(path, "r");
-    if (!f) {
-        ESP_LOGE(TAG, "Failed to open cert file: %s", path);
-        return NULL;
-    }
-
-    fseek(f, 0, SEEK_END);
-    long size = ftell(f);
-    rewind(f);
-
-    char *buffer = calloc(1, size + 1);
-    if (!buffer) {
-        ESP_LOGE(TAG, "Failed to allocate memory for cert: %s", path);
-        fclose(f);
-        return NULL;
-    }
-
-    fread(buffer, 1, size, f);
-    fclose(f);
-    return buffer;
-}
 
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
     ESP_LOGD(TAG, "MQTT event id: %" PRIi32, event_id);
@@ -67,34 +48,26 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 }
 
 void mqtt_manager_init(void) {
-    ESP_LOGI(TAG, "Mounting SPIFFS for certificate loading...");
-    esp_vfs_spiffs_conf_t conf = {
-        .base_path = "/spiffs",
-        .partition_label = "spiffs",
-        .max_files = 5,
-        .format_if_mount_failed = true
-    };
-    ESP_ERROR_CHECK(esp_vfs_spiffs_register(&conf));
-
-    char *root_ca    = read_cert_file("/spiffs/root_ca.pem");
-    char *client_crt = read_cert_file("/spiffs/client.crt");
-    char *client_key = read_cert_file("/spiffs/client.key");
-
-    if (!root_ca || !client_crt || !client_key) {
-        ESP_LOGE(TAG, "One or more certificates failed to load. MQTT init aborted.");
-        return;
-    }
+    ESP_LOGI(TAG, "Initializing MQTT with embedded certificates...");
 
     esp_mqtt_client_config_t mqtt_cfg = {
-        .uri = "mqtts://dev1.pgapi.net:8883",
-        .cert_pem = root_ca,
-        .client_cert_pem = client_crt,
-        .client_key_pem = client_key
+        .broker.address.uri                         = "mqtts://dev1.pgapi.net:8883",
+        .broker.verification.certificate            = (const char *)root_ca_pem,
+        .broker.verification.certificate_len        = root_ca_pem_len,
+        .credentials.authentication.certificate     = (const char *)client_crt,
+        .credentials.authentication.certificate_len = client_crt_len,
+        .credentials.authentication.key             = (const char *)client_key,
+        .credentials.authentication.key_len         = client_key_len,
     };
 
     client = esp_mqtt_client_init(&mqtt_cfg);
+    if (!client) {
+        ESP_LOGE(TAG, "Failed to initialize MQTT client");
+        return;
+    }
+
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     esp_mqtt_client_start(client);
 
-    ESP_LOGI(TAG, "MQTT client started.");
+    ESP_LOGI(TAG, "MQTT client started");
 }
