@@ -1,74 +1,58 @@
-
-/**
- * File: main.c
- * Description: Main entry point for the PianoGuard DCM-1 application.
- * Version: v8.6.5 → updated 2025-07-07
- * Author: R. Andrew Ballard (c) 2025
+/*
+ * PianoGuard_DCM-1 Main Application
+ * Version: 9a8c37e-dirty
+ *
+ * (c) 2025 R. Andrew Ballard
+ * All Rights Reserved.
  */
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "esp_log.h"
-#include "esp_event.h"
-#include "nvs_flash.h"
 #include "esp_spiffs.h"
+#include "wifi_manager.h"   // for wifi_credentials_exist()
+#include "app_logic.h"      // for app_logic_run()
 
-#include "board_manager.h"
-#include "wifi_manager.h"
-#include "http_app.h"      // for http_app_start()
-#include "dns_server.h"    // for dns_server_start()
-#include "mqtt_manager.h"
-#include "app_logic.h"
+// --- SPIFFS configuration fall-backs ---
+#ifndef CONFIG_SPIFFS_BASE_PATH
+#define CONFIG_SPIFFS_BASE_PATH  "/spiffs"
+#endif
+
+#ifndef CONFIG_SPIFFS_PARTITION_LABEL
+#define CONFIG_SPIFFS_PARTITION_LABEL  "spiffs"
+#endif
 
 static const char *TAG = "MAIN";
 
-static bool wifi_credentials_exist(void) {
-    nvs_handle_t nvs;
-    esp_err_t err = nvs_open("nvs.net80211", NVS_READONLY, &nvs);
-    if (err != ESP_OK) return false;
+void app_main(void)
+{
+    ESP_LOGI(TAG, "MAIN: Initializing NVS...");
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(err);
 
-    uint8_t ssid[33] = {0};
-    size_t required_size = sizeof(ssid);
-    err = nvs_get_blob(nvs, "sta.ssid", ssid, &required_size);
-    nvs_close(nvs);
-
-    return (err == ESP_OK && strlen((char *)ssid) > 0);
-}
-
-void app_main(void) {
-    ESP_LOGI(TAG, "Initializing NVS...");
-    ESP_ERROR_CHECK(nvs_flash_init());
-
-    ESP_LOGI(TAG, "Mounting SPIFFS for certificate access...");
+    ESP_LOGI(TAG, "MAIN: Mounting SPIFFS for certificate access...");
     esp_vfs_spiffs_conf_t spiffs_conf = {
-        .base_path = "/spiffs",
-        .partition_label = NULL,
-        .max_files = 4,
-        .format_if_mount_failed = false
+        .base_path      = CONFIG_SPIFFS_BASE_PATH,
+        .partition_label= CONFIG_SPIFFS_PARTITION_LABEL,
+        .max_files      = 5,
+        .format_if_mount_failed = true
     };
-    ESP_ERROR_CHECK(esp_vfs_spiffs_register(&spiffs_conf));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_vfs_spiffs_register(&spiffs_conf));
+    ESP_LOGI(TAG, "MAIN: SPIFFS mounted at %s", CONFIG_SPIFFS_BASE_PATH);
 
-    ESP_LOGI(TAG, "Creating default event loop...");
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    // If Wi-Fi creds already exist, skip provisioning
+    if (!wifi_credentials_exist()) {
+        ESP_LOGI(TAG, "MAIN: No Wi-Fi credentials—starting provisioning...");
+        wifi_manager_start();
+    } else {
+        ESP_LOGI(TAG, "MAIN: Wi-Fi credentials found—connecting...");
+        wifi_manager_start();  // May just call start with stored creds
+    }
 
-    ESP_LOGI(TAG, "Initializing board manager...");
-    board_manager_init();
-
-    ESP_LOGI(TAG, "Starting Wi-Fi manager (init + provisioning)...");
-    wifi_manager_start();   // ← new API that does init()+start provisioning
-
-    ESP_LOGI(TAG, "Waiting for Wi-Fi STA connection...");
-    xEventGroupWaitBits(
-        wifi_manager_get_event_group(),
-        WIFI_MANAGER_STA_CONNECTED_BIT,
-        pdFALSE,
-        pdTRUE,
-        portMAX_DELAY
-    );
-
-    ESP_LOGI(TAG, "Wi-Fi connected. Initializing rest of system...");
-    app_logic_init();
-    mqtt_manager_init();
+    // Once connectivity is up, hand off to your application logic
+    ESP_LOGI(TAG, "MAIN: Running application logic...");
+    app_logic_run();
 }
