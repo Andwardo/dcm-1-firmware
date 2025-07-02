@@ -1,34 +1,9 @@
 /*
-Copyright (c) 2017-2020 Tony Pottier
+Copyright (c) 2017-2025 Tony Pottier & R. Andrew Ballard
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-@file http_app.h
-@author Tony Pottier
-@brief Defines all functions necessary for the HTTP server to run.
-
-Contains the freeRTOS task for the HTTP listener and all necessary support
-function to process requests, decode URLs, serve files, etc. etc.
-
-@note http_server task cannot run without the wifi_manager task!
-@see https://idyl.io
-@see https://github.com/tonyp7/esp32-wifi-manager
+in the Software without restriction...
 */
 
 #ifndef HTTP_APP_H_INCLUDED
@@ -41,33 +16,35 @@ function to process requests, decode URLs, serve files, etc. etc.
 extern "C" {
 #endif
 
+/** @brief The URL where the captive-portal lives (default root). */
+#define WEBAPP_LOCATION    CONFIG_WEBAPP_LOCATION
 
-/** @brief Defines the URL where the wifi manager is located
- *  By default it is at the server root (ie "/"). If you wish to add your own webpages
- *  you may want to relocate the wifi manager to another URL, for instance /wifimanager
- */
-#define WEBAPP_LOCATION 					CONFIG_WEBAPP_LOCATION
-
-
-/** 
- * @brief spawns the http server 
+/**
+ * @brief Start the HTTP captive-portal.
+ * @param lru_purge_enable  if true, purge least-recently-used cache entries.
  */
 void http_app_start(bool lru_purge_enable);
 
+/** @brief Stop the HTTP captive-portal. */
+void http_app_stop(void);
+
 /**
- * @brief stops the http server 
+ * @brief Hook into the POST /connect handler.
+ * @param method   HTTP method (e.g. HTTP_POST)
+ * @param handler  your handler to replace/augment internal wifi_connect_handler
+ * @return ESP_OK or ESP_ERR_INVALID_ARG if unsupported
  */
-void http_app_stop();
+esp_err_t http_app_set_handler_hook(httpd_method_t method,
+                                    esp_err_t (*handler)(httpd_req_t *req));
 
-/** 
- * @brief sets a hook into the wifi manager URI handlers. Setting the handler to NULL disables the hook.
- * @return ESP_OK in case of success, ESP_ERR_INVALID_ARG if the method is unsupported.
+/**
+ * @brief Internal handler for POST /connect (Wi-Fi credentials submission).
+ * If you need to override it, use http_app_set_handler_hook().
  */
-esp_err_t http_app_set_handler_hook( httpd_method_t method,  esp_err_t (*handler)(httpd_req_t *r)  );
-
+esp_err_t wifi_connect_handler(httpd_req_t *req);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* HTTP_APP_H_INCLUDED */

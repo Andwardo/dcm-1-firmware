@@ -3,11 +3,9 @@ idf_component_register(
         "wifi_manager.c"
         "src/http_app.c"
         "src/dns_server.c"
-
     INCLUDE_DIRS
         "."
         "src"
-
     REQUIRES
         esp_wifi
 	esp_http_server
@@ -18,7 +16,6 @@ idf_component_register(
         lwip
         mqtt_manager
         nvs_flash
-
     EMBED_TXTFILES
         "src/portal/index.html"
         "src/portal/style.css"
