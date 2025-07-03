@@ -17,6 +17,12 @@ idf_component_register(
         mqtt_manager
         nvs_flash
     EMBED_TXTFILES
-        "src/portal/index.html"
-        "src/portal/style.css"
+	"src/index.html"
+    	"src/style.css"
+    	"src/code.js"
+    	"src/lock.svg"
+    	"src/wifi0.svg"
+    	"src/wifi1.svg"
+    	"src/wifi2.svg"
+    	"src/wifi3.svg"
 )
