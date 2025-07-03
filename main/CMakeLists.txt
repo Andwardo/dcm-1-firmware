@@ -17,6 +17,6 @@ idf_component_register(
         nvs_flash
         app_logic
         board_manager
-        esp32-wifi-manager
+        wifi_manager
         mqtt_manager
 )
