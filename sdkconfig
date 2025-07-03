@@ -516,7 +516,7 @@ CONFIG_PARTITION_TABLE_OFFSET=0x8000
 #
 # MQTT Manager Configuration
 #
-CONFIG_MQTT_URI="mqtts://your-broker-url"
+CONFIG_MQTT_URI="mqtts://45.56.69.50"
 CONFIG_MQTT_TOPIC="dcm/update"
 # end of MQTT Manager Configuration
 
@@ -1818,7 +1818,7 @@ CONFIG_SPI_FLASH_ENABLE_ENCRYPTED_READ_WRITE=y
 #
 # SPIFFS Configuration
 #
-CONFIG_SPIFFS_MAX_PARTITIONS=3
+CONFIG_SPIFFS_MAX_PARTITIONS=6
 
 #
 # SPIFFS Cache Configuration

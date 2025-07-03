@@ -2,8 +2,8 @@
  * File: wifi_manager.c
  * Description: Wi-Fi manager implementation for PianoGuard DCM-1
  * Created on: 2025-06-18
- * Edited on:  2025-07-07
- * Version: v8.6.10
+ * Edited on:  2025-07-03
+ * Version: v8.6.11
  * Author: R. Andrew Ballard (c) 2025
  */
 
@@ -149,4 +149,19 @@ void wifi_manager_start(void) {
     if (wifi_manager_send_message(&msg) != pdTRUE) {
         ESP_LOGE(TAG, "Failed to queue provisioning message");
     }
+}
+
+/**
+ * @brief   Return true if we already have stored STA credentials (a non-empty SSID).
+ */
+bool wifi_credentials_exist(void)
+{
+    wifi_config_t conf;
+    // Ask the driver for the current STA config
+    if (esp_wifi_get_config(WIFI_IF_STA, &conf) == ESP_OK) {
+        // If SSID string length > 0, we have credentials
+        return (strlen((char*)conf.sta.ssid) > 0);
+    }
+    // On error or empty SSID, treat as “no credentials”
+    return false;
 }

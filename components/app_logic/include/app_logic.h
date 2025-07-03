@@ -4,7 +4,7 @@
  * Created on: 2025-06-15
  * Edited on:  2025-06-18
  *
- * Version: v8.2.0
+ * Version: v8.2.1
  *
  * Author: R. Andrew Ballard (c) 2025
  */
@@ -15,6 +15,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void app_logic_run(void);
+
 
 /**
  * @brief Initializes the main application logic component by creating its FreeRTOS task.

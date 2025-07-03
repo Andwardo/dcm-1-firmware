@@ -10,6 +10,9 @@
 extern "C" {
 #endif
 
+bool wifi_credentials_exist(void);
+
+
 // Event bit to signal the station (STA) is connected
 #define WIFI_MANAGER_STA_CONNECTED_BIT  BIT0
 
