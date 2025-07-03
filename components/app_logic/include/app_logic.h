@@ -6,6 +6,8 @@
  * Author:  R. Andrew Ballard (c) 2025
  */
 
+#include "app_logic.h"
+
 #ifndef APP_LOGIC_H_
 #define APP_LOGIC_H_
 

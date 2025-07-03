@@ -4,7 +4,7 @@
 # Ensures necessary source files and dependencies are registered.
 
 idf_component_register(
-    SRCS          "src/app_logic.c"
+    SRCS          "app_logic.c"
     INCLUDE_DIRS  "include"
     REQUIRES      freertos
                   log
