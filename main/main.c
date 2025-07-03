@@ -1,15 +1,14 @@
 /*
  * File:    main.c
  * Project: PianoGuard_DCM-1
- * Version: dc0736d-dirty
+ * Version: 8.7.7
  * Author:  R. Andrew Ballard (c) 2025
- *  v 8.7.7
  * Description:
  *   Application entry point:
  *   - Init NVS
  *   - Mount SPIFFS
- *   - Start Wi-Fi manager (handles connect or provisioning)
- *   - Hand off to app logic
+ *   - Start Wi-Fi manager (which will provision or connect)
+ *   - Start main application logic task
  */
 
 #include <stdio.h>
@@ -19,7 +18,7 @@
 #include "nvs_flash.h"
 #include "esp_spiffs.h"
 #include "wifi_manager.h"   // for wifi_manager_start()
-#include "app_logic.h"      // for app_logic_init() / app_logic_run()
+#include "app_logic.h"      // for app_logic_init()
 
 static const char *TAG = "MAIN";
 
@@ -36,22 +35,24 @@ void app_main(void)
 
     // 2) Mount SPIFFS (for certificates, web assets, etc)
     esp_vfs_spiffs_conf_t spiffs_conf = {
-        .base_path              = "/spiffs",  // must match partition label
+        .base_path              = "/spiffs",
         .partition_label        = "spiffs",
         .max_files              = 5,
         .format_if_mount_failed = true
     };
-    ESP_ERROR_CHECK(esp_vfs_spiffs_register(&spiffs_conf));
+    ESP_ERROR_CHECK( esp_vfs_spiffs_register(&spiffs_conf) );
     ESP_LOGI(TAG, "SPIFFS mounted at '%s'", spiffs_conf.base_path);
 
-    // 3) Kick off Wi-Fi manager (auto-chooses connect vs provisioning)
+    // 3) Start the Wi-Fi manager (it will provision or auto-connect)
     wifi_manager_start();
-    ESP_LOGI(TAG, "Wi-Fi manager started");
+    ESP_LOGI(TAG, "Wi-Fi manager running");
 
-    // 4) Start application logic
+    // 4) Launch the application logic task
     app_logic_init();
+    ESP_LOGI(TAG, "Application logic started");
 
-    // 5) If you prefer a run loop rather than a task:
-    //    while (1) { app_logic_run(); }
-    //    but app_logic_init has already spawned its own task.
+    // 5) Suspend this task; all work is done in background tasks
+    while (1) {
+        vTaskDelay(pdMS_TO_TICKS(10000));
+    }
 }
