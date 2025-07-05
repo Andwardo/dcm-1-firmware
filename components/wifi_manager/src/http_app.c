@@ -2,7 +2,7 @@
  * File: http_app.c
  * Description: HTTP server for captive-portal provisioning
  * Created on: 2025-06-25
- * Edited on:  2025-07-07 → v8.7.3 (corrected extern declarations for embedded assets)
+ * Edited on:  2025-07-07 → v8.7.4 (refactored for embedded assets from /data directory)
  * Author: R. Andrew Ballard (c) 2025
  */
 
@@ -12,29 +12,30 @@
 #include "wifi_manager.h"
 #include <string.h>
 
-extern const uint8_t _binary_src_index_html_start[] asm("_binary_src_index_html_start");
-extern const uint8_t _binary_src_index_html_end[]   asm("_binary_src_index_html_end");
+// Embedded asset declarations (updated for data/ path)
+extern const uint8_t _binary_data_index_html_start[] asm("_binary_data_index_html_start");
+extern const uint8_t _binary_data_index_html_end[]   asm("_binary_data_index_html_end");
 
-extern const uint8_t _binary_src_style_css_start[]  asm("_binary_src_style_css_start");
-extern const uint8_t _binary_src_style_css_end[]    asm("_binary_src_style_css_end");
+extern const uint8_t _binary_data_style_css_start[]  asm("_binary_data_style_css_start");
+extern const uint8_t _binary_data_style_css_end[]    asm("_binary_data_style_css_end");
 
-extern const uint8_t _binary_src_code_js_start[]    asm("_binary_src_code_js_start");
-extern const uint8_t _binary_src_code_js_end[]      asm("_binary_src_code_js_end");
+extern const uint8_t _binary_data_code_js_start[]    asm("_binary_data_code_js_start");
+extern const uint8_t _binary_data_code_js_end[]      asm("_binary_data_code_js_end");
 
-extern const uint8_t _binary_src_lock_svg_start[]   asm("_binary_src_lock_svg_start");
-extern const uint8_t _binary_src_lock_svg_end[]     asm("_binary_src_lock_svg_end");
+extern const uint8_t _binary_data_lock_svg_start[]   asm("_binary_data_lock_svg_start");
+extern const uint8_t _binary_data_lock_svg_end[]     asm("_binary_data_lock_svg_end");
 
-extern const uint8_t _binary_src_wifi0_svg_start[]  asm("_binary_src_wifi0_svg_start");
-extern const uint8_t _binary_src_wifi0_svg_end[]    asm("_binary_src_wifi0_svg_end");
+extern const uint8_t _binary_data_wifi0_svg_start[]  asm("_binary_data_wifi0_svg_start");
+extern const uint8_t _binary_data_wifi0_svg_end[]    asm("_binary_data_wifi0_svg_end");
 
-extern const uint8_t _binary_src_wifi1_svg_start[]  asm("_binary_src_wifi1_svg_start");
-extern const uint8_t _binary_src_wifi1_svg_end[]    asm("_binary_src_wifi1_svg_end");
+extern const uint8_t _binary_data_wifi1_svg_start[]  asm("_binary_data_wifi1_svg_start");
+extern const uint8_t _binary_data_wifi1_svg_end[]    asm("_binary_data_wifi1_svg_end");
 
-extern const uint8_t _binary_src_wifi2_svg_start[]  asm("_binary_src_wifi2_svg_start");
-extern const uint8_t _binary_src_wifi2_svg_end[]    asm("_binary_src_wifi2_svg_end");
+extern const uint8_t _binary_data_wifi2_svg_start[]  asm("_binary_data_wifi2_svg_start");
+extern const uint8_t _binary_data_wifi2_svg_end[]    asm("_binary_data_wifi2_svg_end");
 
-extern const uint8_t _binary_src_wifi3_svg_start[]  asm("_binary_src_wifi3_svg_start");
-extern const uint8_t _binary_src_wifi3_svg_end[]    asm("_binary_src_wifi3_svg_end");
+extern const uint8_t _binary_data_wifi3_svg_start[]  asm("_binary_data_wifi3_svg_start");
+extern const uint8_t _binary_data_wifi3_svg_end[]    asm("_binary_data_wifi3_svg_end");
 
 static const char *TAG = "HTTP_APP";
 static httpd_handle_t server = NULL;
@@ -47,14 +48,14 @@ static httpd_handle_t server = NULL;
     }
 
 // Define individual asset handlers
-FILE_HANDLER("/",         "text/html",              _binary_src_index_html_start, _binary_src_index_html_end)
-FILE_HANDLER("/style.css","text/css",               _binary_src_style_css_start,  _binary_src_style_css_end)
-FILE_HANDLER("/code.js",  "application/javascript", _binary_src_code_js_start,    _binary_src_code_js_end)
-FILE_HANDLER("/lock.svg", "image/svg+xml",          _binary_src_lock_svg_start,   _binary_src_lock_svg_end)
-FILE_HANDLER("/wifi0.svg","image/svg+xml",          _binary_src_wifi0_svg_start,  _binary_src_wifi0_svg_end)
-FILE_HANDLER("/wifi1.svg","image/svg+xml",          _binary_src_wifi1_svg_start,  _binary_src_wifi1_svg_end)
-FILE_HANDLER("/wifi2.svg","image/svg+xml",          _binary_src_wifi2_svg_start,  _binary_src_wifi2_svg_end)
-FILE_HANDLER("/wifi3.svg","image/svg+xml",          _binary_src_wifi3_svg_start,  _binary_src_wifi3_svg_end)
+FILE_HANDLER("/",         "text/html",              _binary_data_index_html_start, _binary_data_index_html_end)
+FILE_HANDLER("/style.css","text/css",               _binary_data_style_css_start,  _binary_data_style_css_end)
+FILE_HANDLER("/code.js",  "application/javascript", _binary_data_code_js_start,    _binary_data_code_js_end)
+FILE_HANDLER("/lock.svg", "image/svg+xml",          _binary_data_lock_svg_start,   _binary_data_lock_svg_end)
+FILE_HANDLER("/wifi0.svg","image/svg+xml",          _binary_data_wifi0_svg_start,  _binary_data_wifi0_svg_end)
+FILE_HANDLER("/wifi1.svg","image/svg+xml",          _binary_data_wifi1_svg_start,  _binary_data_wifi1_svg_end)
+FILE_HANDLER("/wifi2.svg","image/svg+xml",          _binary_data_wifi2_svg_start,  _binary_data_wifi2_svg_end)
+FILE_HANDLER("/wifi3.svg","image/svg+xml",          _binary_data_wifi3_svg_start,  _binary_data_wifi3_svg_end)
 
 // POST /connect handler
 esp_err_t wifi_connect_handler(httpd_req_t *req) {
@@ -107,15 +108,15 @@ void http_app_start(bool lru_purge_enable) {
     }
 
     httpd_uri_t uris[] = {
-        { .uri = "/",          .method = HTTP_GET,  .handler = handler__binary_src_index_html_start, .user_ctx = NULL },
-        { .uri = "/style.css", .method = HTTP_GET,  .handler = handler__binary_src_style_css_start,  .user_ctx = NULL },
-        { .uri = "/code.js",   .method = HTTP_GET,  .handler = handler__binary_src_code_js_start,    .user_ctx = NULL },
-        { .uri = "/lock.svg",  .method = HTTP_GET,  .handler = handler__binary_src_lock_svg_start,   .user_ctx = NULL },
-        { .uri = "/wifi0.svg", .method = HTTP_GET,  .handler = handler__binary_src_wifi0_svg_start,  .user_ctx = NULL },
-        { .uri = "/wifi1.svg", .method = HTTP_GET,  .handler = handler__binary_src_wifi1_svg_start,  .user_ctx = NULL },
-        { .uri = "/wifi2.svg", .method = HTTP_GET,  .handler = handler__binary_src_wifi2_svg_start,  .user_ctx = NULL },
-        { .uri = "/wifi3.svg", .method = HTTP_GET,  .handler = handler__binary_src_wifi3_svg_start,  .user_ctx = NULL },
-        { .uri = "/connect",   .method = HTTP_POST, .handler = wifi_connect_handler,                 .user_ctx = NULL }
+        { .uri = "/",          .method = HTTP_GET,  .handler = handler__binary_data_index_html_start, .user_ctx = NULL },
+        { .uri = "/style.css", .method = HTTP_GET,  .handler = handler__binary_data_style_css_start,  .user_ctx = NULL },
+        { .uri = "/code.js",   .method = HTTP_GET,  .handler = handler__binary_data_code_js_start,    .user_ctx = NULL },
+        { .uri = "/lock.svg",  .method = HTTP_GET,  .handler = handler__binary_data_lock_svg_start,   .user_ctx = NULL },
+        { .uri = "/wifi0.svg", .method = HTTP_GET,  .handler = handler__binary_data_wifi0_svg_start,  .user_ctx = NULL },
+        { .uri = "/wifi1.svg", .method = HTTP_GET,  .handler = handler__binary_data_wifi1_svg_start,  .user_ctx = NULL },
+        { .uri = "/wifi2.svg", .method = HTTP_GET,  .handler = handler__binary_data_wifi2_svg_start,  .user_ctx = NULL },
+        { .uri = "/wifi3.svg", .method = HTTP_GET,  .handler = handler__binary_data_wifi3_svg_start,  .user_ctx = NULL },
+        { .uri = "/connect",   .method = HTTP_POST, .handler = wifi_connect_handler,                  .user_ctx = NULL }
     };
     for (size_t i = 0; i < sizeof(uris)/sizeof(uris[0]); i++) {
         httpd_register_uri_handler(server, &uris[i]);

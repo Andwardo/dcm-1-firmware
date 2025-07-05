@@ -2,7 +2,7 @@
 #
 # Final version with proper embed ordering
 # Author: R. Andrew Ballard (c) 2025
-# Version: v8.7.7
+# Version: v8.7.9
 #
 idf_component_register(
     SRCS
@@ -22,13 +22,14 @@ idf_component_register(
         lwip
         mqtt_manager
         nvs_flash
-    EMBED_TXTFILES
-        "src/index.html"
-        "src/style.css"
-        "src/code.js"
-        "src/lock.svg"
-        "src/wifi0.svg"
-        "src/wifi1.svg"
-        "src/wifi2.svg"
-        "src/wifi3.svg"
 )
+
+# Manually embed static web resources (correct path and mode)
+target_add_binary_data(${COMPONENT_LIB} "src/index.html" TEXT)
+target_add_binary_data(${COMPONENT_LIB} "src/style.css" TEXT)
+target_add_binary_data(${COMPONENT_LIB} "src/code.js" TEXT)
+target_add_binary_data(${COMPONENT_LIB} "src/lock.svg" TEXT)
+target_add_binary_data(${COMPONENT_LIB} "src/wifi0.svg" TEXT)
+target_add_binary_data(${COMPONENT_LIB} "src/wifi1.svg" TEXT)
+target_add_binary_data(${COMPONENT_LIB} "src/wifi2.svg" TEXT)
+target_add_binary_data(${COMPONENT_LIB} "src/wifi3.svg" TEXT)
