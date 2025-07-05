@@ -1,12 +1,9 @@
+# CMakeLists.txt — wifi_manager
 #
-#  CMakeLists.txt
+# Final version with proper embed ordering
+# Author: R. Andrew Ballard (c) 2025
+# Version: v8.7.7
 #
-#  Created on: 2024-06-18
-#  Edited on: 2025-07-05 (local time)
-#      Author: Andwardo
-#      Version: v8.2.18
-#
-
 idf_component_register(
     SRCS
         "wifi_manager.c"
@@ -25,18 +22,13 @@ idf_component_register(
         lwip
         mqtt_manager
         nvs_flash
+    EMBED_TXTFILES
+        "src/index.html"
+        "src/style.css"
+        "src/code.js"
+        "src/lock.svg"
+        "src/wifi0.svg"
+        "src/wifi1.svg"
+        "src/wifi2.svg"
+        "src/wifi3.svg"
 )
-
-# Automatically embed all static asset files
-file(GLOB EMBED_ASSETS
-    "src/*.html"
-    "src/*.css"
-    "src/*.js"
-    "src/*.svg"
-)
-
-foreach(asset ${EMBED_ASSETS})
-    get_filename_component(fname ${asset} NAME)
-    message(STATUS "Embedding static asset: ${fname}")
-    target_add_binary_data(${COMPONENT_TARGET} "src/${fname}" TEXT)
-endforeach()
