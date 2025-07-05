@@ -38,7 +38,7 @@ void app_main(void)
     esp_vfs_spiffs_conf_t spiffs_conf = {
         .base_path              = "/spiffs",
         .partition_label        = "spiffs",
-        .max_files              = 5,
+        .max_files              = 25,
         .format_if_mount_failed = true
     };
     ESP_ERROR_CHECK(esp_vfs_spiffs_register(&spiffs_conf));
