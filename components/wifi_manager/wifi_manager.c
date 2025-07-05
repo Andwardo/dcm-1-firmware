@@ -29,6 +29,14 @@ static EventGroupHandle_t wifi_event_group;
 static esp_netif_t*       netif_sta;
 static esp_netif_t*       netif_ap;
 
+__attribute__((unused)) static const volatile void* test_ptrs[] = {
+    &_binary_data_index_html_start,
+    &_binary_data_index_html_end,
+    &_binary_data_style_css_start,
+    &_binary_data_style_css_end
+};
+
+
 // Wi-Fi / IP event handler
 static void wifi_event_handler(void* arg, esp_event_base_t base,
                                int32_t id, void* data)

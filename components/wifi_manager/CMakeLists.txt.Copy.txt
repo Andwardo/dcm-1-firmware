@@ -1,0 +1,34 @@
+# CMakeLists.txt — wifi_manager
+#
+# Final version with proper embed ordering
+# Author: R. Andrew Ballard (c) 2025
+# Version: v8.7.10
+#
+idf_component_register(
+    SRCS
+        "wifi_manager.c"
+        "src/http_app.c"
+        "src/dns_server.c"
+    INCLUDE_DIRS
+        "."
+        "src"
+    REQUIRES
+        esp_wifi
+        esp_http_server
+    PRIV_REQUIRES
+        cJSON
+        esp_event
+        esp_netif
+        lwip
+        mqtt_manager
+        nvs_flash
+    EMBED_FILES
+        data/index.html
+        data/style.css
+        data/code.js
+        data/lock.svg
+        data/wifi0.svg
+        data/wifi1.svg
+        data/wifi2.svg
+        data/wifi3.svg
+)
