@@ -1,9 +1,10 @@
 # CMakeLists.txt — wifi_manager
 #
-# Final version with proper embed ordering
+# Final version with proper embed ordering and asset path resolution
 # Author: R. Andrew Ballard (c) 2025
-# Version: v8.7.10
+# Version: v8.7.11
 #
+
 idf_component_register(
     SRCS
         "wifi_manager.c"
@@ -24,12 +25,24 @@ idf_component_register(
         nvs_flash
 )
 
-# Embed static assets directly (no "data/" prefix!)
-target_add_binary_data(${COMPONENT_LIB} "index.html" TEXT)
-target_add_binary_data(${COMPONENT_LIB} "style.css" TEXT)
-target_add_binary_data(${COMPONENT_LIB} "code.js" TEXT)
-target_add_binary_data(${COMPONENT_LIB} "lock.svg" BINARY)
-target_add_binary_data(${COMPONENT_LIB} "wifi0.svg" BINARY)
-target_add_binary_data(${COMPONENT_LIB} "wifi1.svg" BINARY)
-target_add_binary_data(${COMPONENT_LIB} "wifi2.svg" BINARY)
-target_add_binary_data(${COMPONENT_LIB} "wifi3.svg" BINARY)
+# Use absolute paths to avoid silent failures
+set(WIFI_MANAGER_ASSETS
+    "${CMAKE_CURRENT_SOURCE_DIR}/index.html"
+    "${CMAKE_CURRENT_SOURCE_DIR}/style.css"
+    "${CMAKE_CURRENT_SOURCE_DIR}/code.js"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lock.svg"
+    "${CMAKE_CURRENT_SOURCE_DIR}/wifi0.svg"
+    "${CMAKE_CURRENT_SOURCE_DIR}/wifi1.svg"
+    "${CMAKE_CURRENT_SOURCE_DIR}/wifi2.svg"
+    "${CMAKE_CURRENT_SOURCE_DIR}/wifi3.svg"
+)
+
+# Embed each static asset with correct type
+foreach(asset IN LISTS WIFI_MANAGER_ASSETS)
+    get_filename_component(fname "${asset}" NAME)
+    if(fname MATCHES "\\.svg$")
+        target_add_binary_data(${COMPONENT_LIB} "${asset}" BINARY)
+    else()
+        target_add_binary_data(${COMPONENT_LIB} "${asset}" TEXT)
+    endif()
+endforeach()
