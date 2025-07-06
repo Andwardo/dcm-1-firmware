@@ -29,13 +29,22 @@ static EventGroupHandle_t wifi_event_group;
 static esp_netif_t*       netif_sta;
 static esp_netif_t*       netif_ap;
 
-__attribute__((unused)) static const volatile void* test_ptrs[] = {
-    &_binary_data_index_html_start,
-    &_binary_data_index_html_end,
-    &_binary_data_style_css_start,
-    &_binary_data_style_css_end
-};
-
+extern const uint8_t _binary_code_js_end[];
+extern const uint8_t _binary_code_js_start[];
+extern const uint8_t _binary_index_html_end[];
+extern const uint8_t _binary_index_html_start[];
+extern const uint8_t _binary_lock_svg_end[];
+extern const uint8_t _binary_lock_svg_start[];
+extern const uint8_t _binary_style_css_end[];
+extern const uint8_t _binary_style_css_start[];
+extern const uint8_t _binary_wifi0_svg_end[];
+extern const uint8_t _binary_wifi0_svg_start[];
+extern const uint8_t _binary_wifi1_svg_end[];
+extern const uint8_t _binary_wifi1_svg_start[];
+extern const uint8_t _binary_wifi2_svg_end[];
+extern const uint8_t _binary_wifi2_svg_start[];
+extern const uint8_t _binary_wifi3_svg_end[];
+extern const uint8_t _binary_wifi3_svg_start[];
 
 // Wi-Fi / IP event handler
 static void wifi_event_handler(void* arg, esp_event_base_t base,

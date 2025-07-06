@@ -4,16 +4,6 @@
 # Author: R. Andrew Ballard (c) 2025
 # Version: v8.7.10
 #
-# Embed static assets as binary blobs (for use with asm("_binary_*") symbols)
-target_add_binary_data(${COMPONENT_LIB} "data/index.html" TEXT)
-target_add_binary_data(${COMPONENT_LIB} "data/style.css" TEXT)
-target_add_binary_data(${COMPONENT_LIB} "data/code.js" TEXT)
-target_add_binary_data(${COMPONENT_LIB} "data/lock.svg" BINARY)
-target_add_binary_data(${COMPONENT_LIB} "data/wifi0.svg" BINARY)
-target_add_binary_data(${COMPONENT_LIB} "data/wifi1.svg" BINARY)
-target_add_binary_data(${COMPONENT_LIB} "data/wifi2.svg" BINARY)
-target_add_binary_data(${COMPONENT_LIB} "data/wifi3.svg" BINARY)
-
 idf_component_register(
     SRCS
         "wifi_manager.c"
@@ -22,7 +12,6 @@ idf_component_register(
     INCLUDE_DIRS
         "."
         "src"
-        "data"
     REQUIRES
         esp_wifi
         esp_http_server
@@ -34,3 +23,13 @@ idf_component_register(
         mqtt_manager
         nvs_flash
 )
+
+# Embed static assets directly (no "data/" prefix!)
+target_add_binary_data(${COMPONENT_LIB} "index.html" TEXT)
+target_add_binary_data(${COMPONENT_LIB} "style.css" TEXT)
+target_add_binary_data(${COMPONENT_LIB} "code.js" TEXT)
+target_add_binary_data(${COMPONENT_LIB} "lock.svg" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "wifi0.svg" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "wifi1.svg" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "wifi2.svg" BINARY)
+target_add_binary_data(${COMPONENT_LIB} "wifi3.svg" BINARY)
