@@ -1,37 +1,35 @@
-/**
- * File:    main/main.c
- * Project: PianoGuard_DCM-1
- * Version: v8.7.8
+/*
+ * main.c
+ *
+ * Created on: 2025-06-18
  * Edited on: 2025-07-06
- * Author:  R. Andrew Ballard (c) 2025
+ *     Author: R. Andrew Ballard
+ *     Version: v8.2.32
  */
 
-#include <stdio.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_log.h"
-#include "nvs_flash.h"
-#include "esp_event.h"
-#include "esp_netif.h"
 #include "wifi_manager.h"
-#include "http_app.h"
+#include "nvs_flash.h"
+#include "esp_log.h"
 
-static const char *TAG = "MAIN";
+#define TAG "MAIN"
 
 void app_main(void) {
     ESP_LOGI(TAG, "Initializing NVS flash...");
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ESP_ERROR_CHECK(nvs_flash_init());
-    }
+    ESP_ERROR_CHECK(nvs_flash_init());
 
-    ESP_LOGI(TAG, "Setting up networking...");
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-
+    ESP_LOGI(TAG, "Initializing Wi-Fi Manager…");
     wifi_manager_init();
-    wifi_manager_start();
 
-    http_app_start();
+    ESP_LOGI(TAG, "Starting Wi-Fi Manager…");
+
+    // Check if credentials exist, otherwise start AP mode.
+    // This is placeholder logic; replace with actual NVS read logic.
+    bool creds_exist = false;
+
+    if (creds_exist) {
+        // Use saved credentials here
+        wifi_manager_connect_sta("SavedSSID", "SavedPassword");
+    } else {
+        wifi_manager_start();  // Enters captive portal mode
+    }
 }
