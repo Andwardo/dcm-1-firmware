@@ -4,7 +4,7 @@
  * Created on: 2025-06-18
  * Edited on: 2025-07-06
  *     Author: R. Andrew Ballard
- *     Version: v8.2.34
+ *     Version: v8.2.35
  */
 
 #include "http_app.h"
@@ -26,7 +26,7 @@ static httpd_handle_t server = NULL;
 
 static esp_err_t index_handler(httpd_req_t *req) {
     const size_t index_html_len = index_html_end - index_html_start;
-    ESP_LOGI(TAG, "Serving /index.html (%u bytes)", (unsigned)index_html_len);
+    ESP_LOGI(TAG, "Serving / or /index.html (%u bytes)", (unsigned)index_html_len);
     httpd_resp_set_type(req, "text/html");
     return httpd_resp_send(req, index_html_start, index_html_len);
 }
@@ -63,6 +63,14 @@ void http_app_start(bool is_provisioning_mode) {
         .user_ctx  = NULL
     };
     httpd_register_uri_handler(server, &uri_index);
+
+    httpd_uri_t uri_index_html = {
+        .uri       = "/index.html",
+        .method    = HTTP_GET,
+        .handler   = index_handler,
+        .user_ctx  = NULL
+    };
+    httpd_register_uri_handler(server, &uri_index_html);
 
     httpd_uri_t uri_style = {
         .uri       = "/style.css",

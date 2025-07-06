@@ -23,6 +23,7 @@ idf_component_register(
         lwip
         mqtt_manager
         nvs_flash
+        vfs
 )
 
 # Use absolute paths to avoid silent failures
