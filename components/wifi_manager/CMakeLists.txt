@@ -10,9 +10,11 @@ idf_component_register(
         "wifi_manager.c"
         "src/http_app.c"
         "src/dns_server.c"
+        'src/wifi_manager.c"
     INCLUDE_DIRS
         "."
         "src"
+        "include"
     REQUIRES
         esp_wifi
         esp_http_server
@@ -24,6 +26,8 @@ idf_component_register(
         mqtt_manager
         nvs_flash
         vfs
+    PRIV_INCLUDE_DIRS
+        "$ENV{IDF_PATH}/components/wifi_provisioning/include"
 )
 
 # Use absolute paths to avoid silent failures
