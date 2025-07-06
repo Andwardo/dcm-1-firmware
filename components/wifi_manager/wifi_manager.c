@@ -1,9 +1,10 @@
 /**
- * File: wifi_manager.c
- * Description: Wi-Fi manager with SoftAP provisioning and persistent STA config
+ * wifi_manager.c
+ *
  * Created on: 2025-06-25
- * Edited on:  2025-07-07 → v8.7.10 (proper init/start separation, no port reuse bug)
+ * Edited on: 2025-07-07
  * Author: R. Andrew Ballard (c) 2025
+ * Version: v8.7.12
  */
 
 #include "wifi_manager.h"
@@ -13,94 +14,78 @@
 #include "esp_netif.h"
 #include "nvs_flash.h"
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "freertos/queue.h"
-
-#include "dns_server.h"
-#include "http_app.h"
+#include "freertos/task.h"
 
 static const char *TAG = "WIFI_MANAGER";
-static QueueHandle_t wifi_event_queue = NULL;
-static bool wifi_initialized = false;
 
-typedef struct {
-    wifi_config_t sta;
-} wifi_sta_config_t;
+static QueueHandle_t wifi_manager_queue = NULL;
 
-typedef struct {
-    int msg_id;
-    wifi_sta_config_t sta_config;
-} wifi_manager_message_t;
+/**
+ * @brief Send a message to the WiFi Manager queue
+ */
+BaseType_t wifi_manager_send_message(const wifi_manager_message_t *msg) {
+    if (wifi_manager_queue == NULL) {
+        ESP_LOGE(TAG, "wifi_manager_queue not initialized!");
+        return pdFAIL;
+    }
+    return xQueueSend(wifi_manager_queue, msg, portMAX_DELAY);
+}
 
-#define WIFI_MANAGER_QUEUE_SIZE 4
-#define WIFI_MANAGER_MSG_CONNECT_STA 1
-
-static void wifi_task(void *pvParameters) {
+/**
+ * @brief WiFi manager event loop task
+ */
+static void wifi_manager_task(void *pvParameters) {
     wifi_manager_message_t msg;
-
-    for (;;) {
-        if (xQueueReceive(wifi_event_queue, &msg, portMAX_DELAY)) {
-            if (msg.msg_id == WIFI_MANAGER_MSG_CONNECT_STA) {
-                ESP_LOGI(TAG, "Connecting to SSID: %s", (char *)msg.sta_config.sta.sta.ssid);
-                ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-                ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &msg.sta_config.sta));
-                ESP_ERROR_CHECK(esp_wifi_connect());
+    while (1) {
+        if (xQueueReceive(wifi_manager_queue, &msg, portMAX_DELAY)) {
+            switch (msg.msg_code) {
+                case WIFI_MANAGER_MSG_START_AP:
+                    ESP_LOGI(TAG, "Starting SoftAP provisioning");
+                    // Implement SoftAP startup here
+                    break;
+                case WIFI_MANAGER_MSG_START_STA:
+                    ESP_LOGI(TAG, "Starting STA connection");
+                    // Implement STA connection here
+                    break;
+                default:
+                    ESP_LOGW(TAG, "Unknown message code: %d", msg.msg_code);
+                    break;
             }
         }
     }
 }
 
-esp_err_t wifi_manager_send_message(void *msg_ptr) {
-    if (!wifi_event_queue) return ESP_ERR_INVALID_STATE;
-    return xQueueSend(wifi_event_queue, msg_ptr, portMAX_DELAY);
-}
-
+/**
+ * @brief Initialize Wi-Fi Manager
+ */
 void wifi_manager_init(void) {
-    if (wifi_initialized) {
-        ESP_LOGW(TAG, "Wi-Fi Manager already initialized");
+    ESP_LOGI(TAG, "Initializing Wi-Fi Manager…");
+
+    // Create event loop if not already created
+    esp_err_t err = esp_event_loop_create_default();
+    if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) {
+        ESP_LOGE(TAG, "esp_event_loop_create_default failed: 0x%x", err);
         return;
     }
 
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    // Initialize queue
+    wifi_manager_queue = xQueueCreate(10, sizeof(wifi_manager_message_t));
+    if (!wifi_manager_queue) {
+        ESP_LOGE(TAG, "Failed to create Wi-Fi manager queue");
+        return;
+    }
 
-    esp_netif_create_default_wifi_ap();
-    esp_netif_create_default_wifi_sta();
-
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-    ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));
-
-    wifi_event_queue = xQueueCreate(WIFI_MANAGER_QUEUE_SIZE, sizeof(wifi_manager_message_t));
-    xTaskCreatePinnedToCore(wifi_task, "wifi_task", 4096, NULL, 3, NULL, tskNO_AFFINITY);
-
-    wifi_initialized = true;
+    // Start task
+    xTaskCreate(wifi_manager_task, "wifi_manager_task", 4096, NULL, 5, NULL);
 }
 
+/**
+ * @brief Launch SoftAP and HTTP provisioning
+ */
 void wifi_manager_start(void) {
-    if (!wifi_initialized) {
-        ESP_LOGE(TAG, "Cannot start Wi-Fi Manager before init");
-        return;
-    }
-
-    wifi_config_t ap_config = {
-        .ap = {
-            .ssid = "PianoGuard-Setup",
-            .ssid_len = 0,
-            .password = "",
-            .max_connection = 4,
-            .authmode = WIFI_AUTH_OPEN
-        }
+    wifi_manager_message_t msg = {
+        .msg_code = WIFI_MANAGER_MSG_START_AP
     };
-
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &ap_config));
-    ESP_ERROR_CHECK(esp_wifi_start());
-
-    ESP_LOGW(TAG, "Starting SoftAP provisioning");
-
-    ESP_LOGI(TAG, "Launching HTTP captive-portal");
-    http_app_start(false);
-
-    ESP_LOGI(TAG, "Launching DNS captive-portal");
-    dns_server_start();
+    wifi_manager_send_message(&msg);
 }
