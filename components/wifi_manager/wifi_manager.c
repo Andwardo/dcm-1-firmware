@@ -4,7 +4,7 @@
  * Created on: 2025-06-18
  * Edited on: 2025-07-06
  *     Author: R. Andrew Ballard
- *     Version: v8.2.32
+ *     Version: v8.2.33
  */
 
 #include "wifi_manager.h"
@@ -39,15 +39,15 @@ BaseType_t wifi_manager_send_message(const wifi_manager_message_t *msg) {
 
 void wifi_manager_start(void) {
     wifi_manager_message_t msg = {
-        .msg_id = WIFI_MANAGER_MSG_START_AP
+        .msg_id = WIFI_MANAGER_MSG_START_PROVISIONING
     };
     wifi_manager_send_message(&msg);
 }
 
 void wifi_manager_connect_sta(const char *ssid, const char *password) {
     memset(&sta_config, 0, sizeof(wifi_config_t));
-    strncpy((char *)sta_config.sta.ssid, ssid, sizeof(sta_config.sta.ssid));
-    strncpy((char *)sta_config.sta.password, password, sizeof(sta_config.sta.password));
+    strncpy((char *)sta_config.sta.ssid, ssid, sizeof(sta_config.sta.ssid) - 1);
+    strncpy((char *)sta_config.sta.password, password, sizeof(sta_config.sta.password) - 1);
 
     wifi_manager_message_t msg = {
         .msg_id = WIFI_MANAGER_MSG_CONNECT_STA
@@ -69,8 +69,8 @@ static void wifi_manager_task(void *param) {
     for (;;) {
         if (xQueueReceive(wifi_manager_queue, &msg, portMAX_DELAY)) {
             switch (msg.msg_id) {
-                case WIFI_MANAGER_MSG_START_AP:
-                    ESP_LOGI(TAG, "Starting AP...");
+                case WIFI_MANAGER_MSG_START_PROVISIONING:
+                    ESP_LOGI(TAG, "Starting SoftAP + provisioning...");
                     http_app_start(true);
                     break;
 

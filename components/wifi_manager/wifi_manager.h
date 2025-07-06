@@ -1,3 +1,11 @@
+/*
+Copyright (c) 2017-2025 Tony Pottier & R. Andrew Ballard
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction...
+*/
+
 #ifndef WIFI_MANAGER_H_INCLUDED
 #define WIFI_MANAGER_H_INCLUDED
 
@@ -9,9 +17,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-bool wifi_credentials_exist(void);
-
 
 // Event bit to signal the station (STA) is connected
 #define WIFI_MANAGER_STA_CONNECTED_BIT  BIT0
@@ -59,6 +64,18 @@ EventGroupHandle_t wifi_manager_get_event_group(void);
  * Useful for DNS responder to query the AP interface.
  */
 esp_netif_t *wifi_manager_get_esp_netif_sta(void);
+
+/**
+ * @brief Trigger Wi-Fi Manager to connect using saved credentials.
+ *
+ * Called by HTTP portal or boot logic.
+ */
+void wifi_manager_connect_sta(const char *ssid, const char *password);
+
+/**
+ * @brief Check if saved credentials exist in NVS.
+ */
+bool wifi_credentials_exist(void);
 
 #ifdef __cplusplus
 }
