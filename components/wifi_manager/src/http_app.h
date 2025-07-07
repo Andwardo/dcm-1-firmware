@@ -19,6 +19,8 @@
 #include <stdbool.h>
 #include <esp_http_server.h>
 
+void http_app_start(void);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
