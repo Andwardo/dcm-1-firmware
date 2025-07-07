@@ -12,9 +12,12 @@
 #include "esp_log.h"
 #include "esp_err.h"
 #include "esp_vfs.h"
-#include "esp_http_server.h"
 
 #define TAG "http_app"
+
+void http_app_start(void) {
+    ESP_LOGI(TAG, "http_app_start() stub called.");
+}
 
 static esp_err_t serve_static_file(httpd_req_t *req, const char *filepath, const char *content_type) {
     FILE *f = fopen(filepath, "rb");
