@@ -10,7 +10,7 @@
 #include <string.h>
 #include "esp_log.h"
 #include "esp_err.h"
-#include "esp_http_server.h"
+// #include "esp_http_server.h"
 #include "http_app.h"
 
 extern const uint8_t index_html_start[] asm("_binary_index_html_start");
