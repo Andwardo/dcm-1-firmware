@@ -4,7 +4,7 @@
  *  Created on: 2025-06-12
  *  Edited on: 2025-07-07
  *      Author: Andwardo
- *      Version: v8.2.36
+ *      Version: v8.2.37
  */
 
 #include "http_app.h"
@@ -13,7 +13,6 @@
 #include <string.h>
 #include <sys/stat.h>
 #include "esp_vfs.h"
-#include "esp_spiffs.h"
 
 static const char *TAG = "http_app";
 
