@@ -19,7 +19,7 @@
 #include <stdbool.h>
 #include <esp_http_server.h>
 
-void http_app_start(void);
+void http_app_start(bool lru_purge_enable);
 
 #ifdef __cplusplus
 extern "C" {
