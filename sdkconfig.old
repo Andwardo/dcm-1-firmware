@@ -516,7 +516,7 @@ CONFIG_PARTITION_TABLE_OFFSET=0x8000
 #
 # MQTT Manager Configuration
 #
-CONFIG_MQTT_URI="mqtts://your-broker-url"
+CONFIG_MQTT_URI="mqtts://45.56.69.50"
 CONFIG_MQTT_TOPIC="dcm/update"
 # end of MQTT Manager Configuration
 

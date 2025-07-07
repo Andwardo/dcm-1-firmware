@@ -4,9 +4,9 @@
  *  Created on: 2025-06-23
  *  Edited on: 2025-07-07 (local time)
  *      Author: Andwardo
- *      Version: v8.2.42
+ *      Version: v8.2.43
  */
-
+#include <string.h>
 #include "wifi_manager.h"
 #include "http_app.h"
 #include "freertos/FreeRTOS.h"
