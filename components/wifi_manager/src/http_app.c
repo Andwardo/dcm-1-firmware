@@ -12,7 +12,7 @@
 #include "esp_log.h"
 #include "esp_err.h"
 #include "esp_vfs.h"
-#include "http_server.h"
+#include "esp_http_server.h"
 
 #define TAG "http_app"
 

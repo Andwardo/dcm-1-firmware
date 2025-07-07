@@ -12,7 +12,7 @@ set(COMPONENT_ADD_INCLUDEDIRS
 idf_component_register(
     SRCS "${COMPONENT_SRCS}"
     INCLUDE_DIRS "${COMPONENT_ADD_INCLUDEDIRS}"
-    REQUIRES nvs_flash esp_wifi esp_event esp_netif mdns
+    REQUIRES nvs_flash esp_wifi esp_event esp_netif mdns esp_http_server
 )
 
 # Default build configuration
