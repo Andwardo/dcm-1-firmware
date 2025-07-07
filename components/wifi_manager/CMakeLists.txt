@@ -1,54 +1,49 @@
-# CMakeLists.txt — wifi_manager
-#
-# Final version with proper embed ordering and asset path resolution
-# Author: R. Andrew Ballard (c) 2025
-# Version: v8.7.11
-#
-
-idf_component_register(
-    SRCS
-        "wifi_manager.c"
-        "src/http_app.c"
-        "src/dns_server.c"
-        'src/wifi_manager.c"
-    INCLUDE_DIRS
-        "."
-        "src"
-        "include"
-    REQUIRES
-        esp_wifi
-        esp_http_server
-        wifi_provisioning
-    PRIV_REQUIRES
-        cJSON
-        esp_event
-        esp_netif
-        lwip
-        mqtt_manager
-        nvs_flash
-        vfs
-    PRIV_INCLUDE_DIRS
-        "$ENV{IDF_PATH}/components/wifi_provisioning/include"
+set(COMPONENT_SRCS 
+    "wifi_manager.c"
+    "src/http_app.c"
+    "src/dns_server.c"
 )
 
-# Use absolute paths to avoid silent failures
-set(WIFI_MANAGER_ASSETS
-    "${CMAKE_CURRENT_SOURCE_DIR}/index.html"
-    "${CMAKE_CURRENT_SOURCE_DIR}/style.css"
-    "${CMAKE_CURRENT_SOURCE_DIR}/code.js"
-    "${CMAKE_CURRENT_SOURCE_DIR}/lock.svg"
-    "${CMAKE_CURRENT_SOURCE_DIR}/wifi0.svg"
-    "${CMAKE_CURRENT_SOURCE_DIR}/wifi1.svg"
-    "${CMAKE_CURRENT_SOURCE_DIR}/wifi2.svg"
-    "${CMAKE_CURRENT_SOURCE_DIR}/wifi3.svg"
-)
+set(COMPONENT_ADD_INCLUDEDIRS "." "src")
 
-# Embed each static asset with correct type
-foreach(asset IN LISTS WIFI_MANAGER_ASSETS)
-    get_filename_component(fname "${asset}" NAME)
-    if(fname MATCHES "\\.svg$")
-        target_add_binary_data(${COMPONENT_LIB} "${asset}" BINARY)
-    else()
-        target_add_binary_data(${COMPONENT_LIB} "${asset}" TEXT)
-    endif()
-endforeach()
+idf_component_register(SRCS "${COMPONENT_SRCS}"
+                       INCLUDE_DIRS "${COMPONENT_ADD_INCLUDEDIRS}"
+                       REQUIRES nvs_flash esp_wifi esp_event esp_netif mdns)
+
+# Default build configuration
+if(NOT DEFINED DEFAULT_SSID)
+    set(DEFAULT_SSID "myssid")
+endif()
+
+if(NOT DEFINED DEFAULT_PASSWORD)
+    set(DEFAULT_PASSWORD "mypassword")
+endif()
+
+if(NOT DEFINED DEFAULT_HOSTNAME)
+    set(DEFAULT_HOSTNAME "esp32")
+endif()
+
+# ... [leave all the DEFAULT_* config as you had] ...
+
+target_compile_definitions(${COMPONENT_LIB} PUBLIC
+    "-DDEFAULT_SSID=\"${DEFAULT_SSID}\""
+    "-DDEFAULT_PASSWORD=\"${DEFAULT_PASSWORD}\""
+    "-DDEFAULT_HOSTNAME=\"${DEFAULT_HOSTNAME}\""
+    "-DDEFAULT_AP_IP=\"${DEFAULT_AP_IP}\""
+    "-DDEFAULT_AP_GATEWAY=\"${DEFAULT_AP_GATEWAY}\""
+    "-DDEFAULT_AP_NETMASK=\"${DEFAULT_AP_NETMASK}\""
+    "-DDEFAULT_AP_CHANNEL=${DEFAULT_AP_CHANNEL}"
+    "-DDEFAULT_AP_MAX_CONNECTIONS=${DEFAULT_AP_MAX_CONNECTIONS}"
+    "-DDEFAULT_WIFI_POWER_SAVE=${DEFAULT_WIFI_POWER_SAVE}"
+    "-DDEFAULT_SCAN_METHOD=${DEFAULT_SCAN_METHOD}"
+    "-DDEFAULT_SORT_METHOD=${DEFAULT_SORT_METHOD}"
+    "-DDEFAULT_AUTHMODE=${DEFAULT_AUTHMODE}"
+    "-DDEFAULT_THRESHOLD_RSSI=${DEFAULT_THRESHOLD_RSSI}"
+    "-DDEFAULT_THRESHOLD_AUTHMODE=${DEFAULT_THRESHOLD_AUTHMODE}"
+    "-DDEFAULT_WEB_PORT=${DEFAULT_WEB_PORT}"
+    "-DDEFAULT_CAPTIVE_PORTAL_ENABLE=${DEFAULT_CAPTIVE_PORTAL_ENABLE}"
+    "-DDEFAULT_AP_HIDE_SSID=${DEFAULT_AP_HIDE_SSID}"
+    "-DDEFAULT_AP_BEACON_INTERVAL=${DEFAULT_AP_BEACON_INTERVAL}"
+    "-DDEFAULT_AP_SSID=\"${DEFAULT_AP_SSID}\""
+    "-DDEFAULT_AP_PASSWORD=\"${DEFAULT_AP_PASSWORD}\""
+)
