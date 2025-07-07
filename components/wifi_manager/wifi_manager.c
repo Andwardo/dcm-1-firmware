@@ -1,124 +1,74 @@
 /*
- * wifi_manager.c
+ *  wifi_manager.c
  *
- * Created on: 2025-06-18
- * Edited on: 2025-07-06
- *     Author: R. Andrew Ballard
- *     Version: v8.2.34a
+ *  Created on: 2025-07-07
+ *  Edited on: 2025-07-07 (local time)
+ *      Author: Andwardo
+ *      Version: v8.2.41
  */
 
+#include <stdio.h>
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/event_groups.h"
+#include "freertos/task.h"
+#include "esp_wifi.h"
+#include "esp_log.h"
+#include "esp_event_loop.h"
+#include "esp_system.h"
+#include "esp_event.h"
+#include "nvs_flash.h"
 #include "wifi_manager.h"
 #include "http_app.h"
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/event_groups.h"
-#include "freertos/queue.h"
-#include "freertos/task.h"
-#include "esp_event.h"
-#include "esp_log.h"
-#include "esp_wifi.h"
-#include "esp_netif.h"
-#include "nvs_flash.h"
-#include <string.h>
+#define TAG "wifi_manager"
 
-#define TAG "WIFI_MANAGER"
-#define WIFI_MANAGER_TASK_STACK_SIZE 4096
-#define WIFI_MANAGER_TASK_PRIORITY   3
-#define WIFI_MANAGER_QUEUE_SIZE      5
+static EventGroupHandle_t wifi_event_group;
+const int WIFI_CONNECTED_BIT = BIT0;
 
-static QueueHandle_t wifi_manager_queue = NULL;
-static TaskHandle_t wifi_manager_task_handle = NULL;
-static wifi_config_t sta_config;
-
-static EventGroupHandle_t wifi_event_group = NULL;
-static esp_netif_t *netif_sta = NULL;
-
-static void wifi_manager_task(void *param);
-
-BaseType_t wifi_manager_send_message(const wifi_manager_message_t *msg) {
-    if (!wifi_manager_queue || !msg) {
-        return pdFAIL;
+static void wifi_event_handler(void* arg, esp_event_base_t event_base,
+                               int32_t event_id, void* event_data) {
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+        esp_wifi_connect();
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+        esp_wifi_connect();
+        xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
+    } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+        xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
     }
-    return xQueueSend(wifi_manager_queue, msg, portMAX_DELAY);
-}
-
-void wifi_manager_start(void) {
-    wifi_manager_message_t msg = {
-        .msg_id = WIFI_MANAGER_MSG_START_PROVISIONING
-    };
-    wifi_manager_send_message(&msg);
-}
-
-void wifi_manager_connect_sta(const char *ssid, const char *password) {
-    memset(&sta_config, 0, sizeof(wifi_config_t));
-    strncpy((char *)sta_config.sta.ssid, ssid, sizeof(sta_config.sta.ssid) - 1);
-    strncpy((char *)sta_config.sta.password, password, sizeof(sta_config.sta.password) - 1);
-
-    wifi_manager_message_t msg = {
-        .msg_id = WIFI_MANAGER_MSG_CONNECT_STA
-    };
-    wifi_manager_send_message(&msg);
 }
 
 void wifi_manager_init(void) {
-    // Initialize networking core and event loop
     ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    // Create default interfaces for AP and STA
-    esp_netif_create_default_wifi_ap();
-    netif_sta = esp_netif_create_default_wifi_sta();
-
-    // Create event group
     wifi_event_group = xEventGroupCreate();
 
-    // Initialize Wi-Fi driver
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    esp_netif_create_default_wifi_sta();
+
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    // Initialize message queue and task
-    wifi_manager_queue = xQueueCreate(WIFI_MANAGER_QUEUE_SIZE, sizeof(wifi_manager_message_t));
-    xTaskCreate(wifi_manager_task, "wifi_manager_task", WIFI_MANAGER_TASK_STACK_SIZE, NULL, WIFI_MANAGER_TASK_PRIORITY, &wifi_manager_task_handle);
+    ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL));
+
+    wifi_config_t wifi_config = {
+        .sta = {
+            .ssid = DEFAULT_SSID,
+            .password = DEFAULT_PASSWORD,
+        },
+    };
+
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_start());
+
+    ESP_LOGI(TAG, "wifi_manager_init finished.");
+
+    // Start HTTP Server to serve captive portal files
+    http_app_start();
 }
 
-EventGroupHandle_t wifi_manager_get_event_group(void) {
-    return wifi_event_group;
-}
-
-esp_netif_t *wifi_manager_get_esp_netif_sta(void) {
-    return netif_sta;
-}
-
-bool wifi_credentials_exist(void) {
-    // Optional: implement a check against NVS if credentials were stored
-    return false;
-}
-
-static void wifi_manager_task(void *param) {
-    wifi_manager_message_t msg;
-
-    for (;;) {
-        if (xQueueReceive(wifi_manager_queue, &msg, portMAX_DELAY)) {
-            switch (msg.msg_id) {
-                case WIFI_MANAGER_MSG_START_PROVISIONING:
-                    ESP_LOGI(TAG, "Starting AP for provisioning...");
-                    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
-                    ESP_ERROR_CHECK(esp_wifi_start());
-                    http_app_start(true);
-                    break;
-
-                case WIFI_MANAGER_MSG_CONNECT_STA:
-                    ESP_LOGI(TAG, "Connecting to STA...");
-                    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-                    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &sta_config));
-                    ESP_ERROR_CHECK(esp_wifi_start());
-                    ESP_ERROR_CHECK(esp_wifi_connect());
-                    break;
-
-                default:
-                    ESP_LOGW(TAG, "Unknown message ID: %d", msg.msg_id);
-                    break;
-            }
-        }
-    }
+void wifi_manager_task(void *pvParameters) {
+    wifi_manager_init();
+    vTaskDelete(NULL);
 }

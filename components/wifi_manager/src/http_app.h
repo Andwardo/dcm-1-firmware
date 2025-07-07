@@ -18,8 +18,6 @@
 
 #include <stdbool.h>
 
-void http_app_start(bool lru_purge_enable);
-
 #ifdef __cplusplus
 extern "C" {
 #endif
