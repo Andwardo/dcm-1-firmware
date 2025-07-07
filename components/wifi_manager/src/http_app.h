@@ -17,7 +17,6 @@
 #define HTTP_APP_H_INCLUDED
 
 #include <stdbool.h>
-#include <esp_http_server.h>
 
 void http_app_start(bool lru_purge_enable);
 
