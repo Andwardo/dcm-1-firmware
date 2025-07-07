@@ -3,24 +3,20 @@
  *
  *  Created on: 2025-07-07
  *      Author: Andwardo
- *      Version: v1.1
+ *      Version: v1.2
  */
 
-#ifndef HTTP_APP_H_
-#define HTTP_APP_H_
+#ifndef HTTP_APP_H
+#define HTTP_APP_H
 
-#include "esp_err.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/**
- * @brief Start the HTTP server with captive portal file handlers.
- *
- * This function sets up routes for serving static files (e.g., index.html, code.js)
- * during captive portal mode.
- *
- * @return
- *      - ESP_OK on success
- *      - appropriate ESP_ERR_* code on failure
- */
-esp_err_t http_app_start(void);
+void http_app_start(void);
 
-#endif /* HTTP_APP_H_ */
+#ifdef __cplusplus
+}
+#endif
+
+#endif // HTTP_APP_H
