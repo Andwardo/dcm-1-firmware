@@ -26,7 +26,7 @@ extern "C" {
  *      - ESP_OK on success
  *      - ESP_FAIL otherwise
  */
-esp_err_t start_http_server(void);
+httpd_handle_t start_http_server(void);
 
 #ifdef __cplusplus
 }
