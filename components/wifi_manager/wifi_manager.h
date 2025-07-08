@@ -2,29 +2,46 @@
  *  wifi_manager.h
  *
  *  Created on: 2025-06-23
- *  Edited on: 2025-07-07 (local time)
+ *  Edited on: 2025-07-08
  *      Author: Andwardo
- *      Version: v8.2.42
+ *      Version: v8.2.44
  */
 
-#ifndef WIFI_MANAGER_H
-#define WIFI_MANAGER_H
+#ifndef WIFI_MANAGER_H_
+#define WIFI_MANAGER_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define DEFAULT_AP_SSID           "ESP32_AP"
-#define DEFAULT_AP_PASSWORD       "12345678"
-#define DEFAULT_AP_CHANNEL        1
-#define DEFAULT_AP_MAX_CONNECTIONS 4
-#define DEFAULT_AP_HIDE_SSID      0
-#define DEFAULT_AP_BEACON_INTERVAL 100
+const char* get_ap_ssid(void);
+void generate_ap_ssid_from_mac(void);
 
+
+/**
+ * @brief Starts the Wi-Fi manager task.
+ *
+ * This function initializes the Wi-Fi stack, sets up the AP/STA mode,
+ * and launches the HTTP web server.
+ */
 void wifi_manager_start(void);
+
+/**
+ * @brief Generates the dynamic SSID string from the SoftAP MAC address.
+ *
+ * Should be called before accessing get_ap_ssid().
+ */
+void generate_ap_ssid_from_mac(void);
+
+/**
+ * @brief Returns a pointer to the dynamically generated SoftAP SSID.
+ *
+ * @return const char* pointer to SSID string
+ */
+const char* get_ap_ssid(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // WIFI_MANAGER_H
+#endif /* WIFI_MANAGER_H_ */
