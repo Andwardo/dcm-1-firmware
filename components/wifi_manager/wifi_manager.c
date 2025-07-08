@@ -15,6 +15,7 @@
 #include "nvs_flash.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
+#include <string.h>
 
 static const char *TAG = "wifi_manager";
 
