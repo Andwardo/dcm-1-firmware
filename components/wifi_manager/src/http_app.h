@@ -1,37 +1,18 @@
 /*
  *  http_app.h
  *
- *  Created on: 2025-07-07
+ *  Created on: 2025-06-18
+ *  Edited on: 2025-07-08
  *      Author: Andwardo
- *      Version: v1.3
+ *      Version: v8.2.46
  */
 
-
-#ifndef HTTP_APP_H
-#define HTTP_APP_H
+#ifndef HTTP_APP_H_
+#define HTTP_APP_H_
 
 #include "esp_err.h"
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "esp_http_server.h"
-/**
- * @brief Starts the embedded HTTP server to serve captive portal assets.
- *
- * This initializes the HTTP server and sets up handlers for static files like
- * style.css and code.js which are embedded via binary linking.
- *
- * @return
- *      - ESP_OK on success
- *      - ESP_FAIL otherwise
- */
+
 httpd_handle_t start_http_server(void);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif // HTTP_APP_H
+#endif /* HTTP_APP_H_ */
