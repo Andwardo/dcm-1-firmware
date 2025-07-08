@@ -7,8 +7,17 @@
  *      Version: v8.2.45
  */
 
-#ifndef WIFI_MANAGER_H_
-#define WIFI_MANAGER_H_
+#ifndef WIFI_MANAGER_H
+#define WIFI_MANAGER_H
+
+#include "freertos/FreeRTOS.h"
+#include "freertos/event_groups.h"
+
+#define WIFI_MANAGER_STA_CONNECTED_BIT BIT0
+
+EventGroupHandle_t wifi_manager_get_event_group(void);
+
+#endif // WIFI_MANAGER_H
 
 #ifdef __cplusplus
 extern "C" {
