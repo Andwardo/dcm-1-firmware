@@ -4,7 +4,7 @@
  *  Created on: 2025-06-23
  *  Edited on: 2025-07-08
  *      Author: Andwardo
- *      Version: v8.2.44
+ *      Version: v8.2.45
  */
 
 #ifndef WIFI_MANAGER_H_
@@ -13,10 +13,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-const char* get_ap_ssid(void);
-void generate_ap_ssid_from_mac(void);
-
 
 /**
  * @brief Starts the Wi-Fi manager task.
