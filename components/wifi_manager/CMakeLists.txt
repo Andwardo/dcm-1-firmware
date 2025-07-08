@@ -1,8 +1,7 @@
 set(COMPONENT_SRCS "wifi_manager.c"
                    "src/http_app.c")
 
-set(COMPONENT_ADD_INCLUDEDIRS "."
-                               "src")
+set(COMPONENT_ADD_INCLUDEDIRS "src")
 
 idf_component_register(SRCS "${COMPONENT_SRCS}"
                        INCLUDE_DIRS "${COMPONENT_ADD_INCLUDEDIRS}"
