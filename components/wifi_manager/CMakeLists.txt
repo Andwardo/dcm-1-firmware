@@ -3,13 +3,7 @@ set(COMPONENT_SRCS
     "src/http_app.c"
 )
 
-set(COMPONENT_ADD_INCLUDEDIRS "src")
-
-idf_component_register(
-    SRCS "${COMPONENT_SRCS}"
-    INCLUDE_DIRS "${COMPONENT_ADD_INCLUDEDIRS}"
-    REQUIRES nvs_flash esp_wifi esp_event esp_netif mdns esp_http_server
-)
+set(COMPONENT_ADD_INCLUDEDIRS "." "src")
 
 # Default build configuration
 if(NOT DEFINED DEFAULT_SSID)
@@ -90,6 +84,12 @@ endif()
 if(NOT DEFINED DEFAULT_AP_PASSWORD)
     set(DEFAULT_AP_PASSWORD "pianoguard")
 endif()
+
+idf_component_register(
+    SRCS "${COMPONENT_SRCS}"
+    INCLUDE_DIRS "${COMPONENT_ADD_INCLUDEDIRS}"
+    REQUIRES nvs_flash esp_wifi esp_event esp_netif mdns esp_http_server
+)
 
 target_compile_definitions(${COMPONENT_LIB} PUBLIC
     "-DDEFAULT_SSID=\"${DEFAULT_SSID}\""

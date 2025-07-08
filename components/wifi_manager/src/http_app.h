@@ -11,12 +11,13 @@
 #define HTTP_APP_H
 
 #include "esp_err.h"
-#include "esp_http_server.h"
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include "esp_http_server.h"
 /**
  * @brief Starts the embedded HTTP server to serve captive portal assets.
  *
