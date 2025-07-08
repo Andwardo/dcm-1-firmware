@@ -1,11 +1,15 @@
-set(COMPONENT_SRCS "wifi_manager.c"
-                   "src/http_app.c")
+set(COMPONENT_SRCS
+    "wifi_manager.c"
+    "src/http_app.c"
+)
 
 set(COMPONENT_ADD_INCLUDEDIRS "src")
 
-idf_component_register(SRCS "${COMPONENT_SRCS}"
-                       INCLUDE_DIRS "${COMPONENT_ADD_INCLUDEDIRS}"
-                       REQUIRES nvs_flash esp_wifi esp_event esp_netif mdns)
+idf_component_register(
+    SRCS "${COMPONENT_SRCS}"
+    INCLUDE_DIRS "${COMPONENT_ADD_INCLUDEDIRS}"
+    REQUIRES nvs_flash esp_wifi esp_event esp_netif mdns esp_http_server
+)
 
 # Default build configuration
 if(NOT DEFINED DEFAULT_SSID)
@@ -80,9 +84,8 @@ if(NOT DEFINED DEFAULT_AP_BEACON_INTERVAL)
     set(DEFAULT_AP_BEACON_INTERVAL 100)
 endif()
 
-if(NOT DEFINED DEFAULT_AP_SSID)
-    set(DEFAULT_AP_SSID "PianoGuard-DCM-1-Setup")
-endif()
+# Remove DEFAULT_AP_SSID definition – now generated dynamically from MAC
+# Remove DEFAULT_AP_PASSWORD if you prefer hardcoded, otherwise leave it
 
 if(NOT DEFINED DEFAULT_AP_PASSWORD)
     set(DEFAULT_AP_PASSWORD "pianoguard")
@@ -107,6 +110,5 @@ target_compile_definitions(${COMPONENT_LIB} PUBLIC
     "-DDEFAULT_CAPTIVE_PORTAL_ENABLE=${DEFAULT_CAPTIVE_PORTAL_ENABLE}"
     "-DDEFAULT_AP_HIDE_SSID=${DEFAULT_AP_HIDE_SSID}"
     "-DDEFAULT_AP_BEACON_INTERVAL=${DEFAULT_AP_BEACON_INTERVAL}"
-    "-DDEFAULT_AP_SSID=\"${DEFAULT_AP_SSID}\""
     "-DDEFAULT_AP_PASSWORD=\"${DEFAULT_AP_PASSWORD}\""
 )

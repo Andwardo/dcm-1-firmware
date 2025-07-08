@@ -16,6 +16,7 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include <string.h>
+#include "esp_mac.h"
 
 #define AP_SSID_PREFIX "PianoGuardSetup-"
 #define DEFAULT_AP_PASSWORD "pianoguard"
