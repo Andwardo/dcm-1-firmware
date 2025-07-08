@@ -67,8 +67,9 @@ static void wifi_manager_task(void *pvParameters) {
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &ap_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    http_app_start();
-
+//    http_app_start();
+      start_http_server();
+      
     vTaskDelete(NULL);
 }
 
