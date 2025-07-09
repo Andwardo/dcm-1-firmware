@@ -4,7 +4,7 @@
  *  Created on: 2025-06-23
  *  Edited on: 2025-07-09
  *      Author: Andwardo
- *      Version: v8.2.47
+ *      Version: v8.2.48
  */
 
 #include "wifi_manager.h"
@@ -12,8 +12,9 @@
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_mac.h"
-#include "esp_netif.h"
 #include "nvs_flash.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/event_groups.h"
 #include <string.h>
 
 static const char *TAG = "wifi_manager";
@@ -70,24 +71,4 @@ void wifi_manager_start(void) {
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "WiFi Manager started with SSID: %s", ap_ssid);
-}
-
-void wifi_manager_connect_sta(const char* ssid, const char* password) {
-    ESP_LOGI(TAG, "Connecting to STA SSID: %s", ssid);
-
-    esp_netif_create_default_wifi_sta();
-
-    wifi_config_t sta_config = {
-        .sta = {
-            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
-        },
-    };
-
-    strncpy((char *)sta_config.sta.ssid, ssid, sizeof(sta_config.sta.ssid));
-    strncpy((char *)sta_config.sta.password, password, sizeof(sta_config.sta.password));
-
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &sta_config));
-    ESP_ERROR_CHECK(esp_wifi_start());
-    ESP_ERROR_CHECK(esp_wifi_connect());
 }
