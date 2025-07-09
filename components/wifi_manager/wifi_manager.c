@@ -3,9 +3,9 @@
  * Description: Wi-Fi manager implementation for captive portal, NVS, and event handling.
  * Created on: 2025-06-18
  * Edited on:  2025-07-09
- * Version: v8.6.5
+ * Version: v8.6.6
  * Author: R. Andrew Ballard (c) 2025
- * Patch: Add #include <string.h> to resolve strncpy() implicit declaration error.
+ * Fix: Add NVS initialization required before esp_wifi_init() on ESP-IDF v5.2.5.
  **/
 
 #include "freertos/FreeRTOS.h"
@@ -45,6 +45,13 @@ void wifi_manager_start(void) {
 	generate_ap_ssid_from_mac();
 
 	ESP_LOGI(TAG, "Starting Wi-Fi manager, AP SSID: %s", ap_ssid);
+
+	esp_err_t ret = nvs_flash_init();
+	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+		ESP_ERROR_CHECK(nvs_flash_erase());
+		ret = nvs_flash_init();
+	}
+	ESP_ERROR_CHECK(ret);
 
 	ESP_ERROR_CHECK(esp_netif_init());
 	ESP_ERROR_CHECK(esp_event_loop_create_default());
