@@ -1,29 +1,26 @@
-/*
- *  main.c
- *
- *  Created on: 2025-06-18
- *  Edited on: 2025-07-09
- *      Author: R. Andrew Ballard
- *      Version: v8.2.33
- */
+/**
+ * File: main.c
+ * Description: Main entry point for the PianoGuard DCM-1 application.
+ * Created on: 2025-06-25
+ * Edited on:  2025-07-09
+ * Version: v8.6.2
+ * Author: R. Andrew Ballard (c) 2025
+ * Fix: Add stdint.h for uint16_t errors and terminate app_main() properly.
+ **/
 
-#include "wifi_manager.h"
-#include "nvs_flash.h"
+#include <stdio.h>
+#include <stdint.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_log.h"
-
-#define TAG "MAIN"
+#include "wifi_manager.h"
 
 void app_main(void) {
-    ESP_LOGI(TAG, "Initializing NVS flash...");
-    ESP_ERROR_CHECK(nvs_flash_init());
+    ESP_LOGI("main", "PianoGuard DCM-1 starting up...");
 
-    ESP_LOGI(TAG, "Starting Wi-Fi Manager…");
+    wifi_manager_start();
 
-    bool creds_exist = false;
-
-    if (creds_exist) {
-        wifi_manager_connect_sta("SavedSSID", "SavedPassword");
-    } else {
-        wifi_manager_start();  // Enters captive portal mode
+    while (1) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
