@@ -29,7 +29,7 @@ EventGroupHandle_t wifi_manager_get_event_group(void) {
 void generate_ap_ssid_from_mac(void) {
     uint8_t mac[6];
     esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
-    snprintf(ap_ssid, sizeof(ap_ssid), "PianoGuardSetup-%02X%02X%02X", mac[3], mac[4], mac[5]);
+    snprintf(ap_ssid, sizeof(ap_ssid), "PianoGuard-%02X%02X%02X", mac[3], mac[4], mac[5]);
     ESP_LOGI(TAG, "Generated AP SSID: %s", ap_ssid);
 }
 
