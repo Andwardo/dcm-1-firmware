@@ -4,7 +4,7 @@
  *  Created on: 2025-06-23
  *  Edited on: 2025-07-09
  *      Author: Andwardo
- *      Version: v8.2.47
+ *      Version: v8.2.48
  */
 
 #include "wifi_manager.h"
@@ -57,7 +57,7 @@ void wifi_manager_start(void) {
             .ssid = "",
             .ssid_len = 0,
             .channel = 1,
-            .password = "password",
+            .password = "pianoguard",
             .max_connection = 4,
             .authmode = WIFI_AUTH_WPA_WPA2_PSK
         },
