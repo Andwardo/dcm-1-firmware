@@ -2,9 +2,9 @@
  *  wifi_manager.c
  *
  *  Created on: 2025-06-23
- *  Edited on: 2025-07-08
+ *  Edited on: 2025-07-09
  *      Author: Andwardo
- *      Version: v8.2.46
+ *      Version: v8.2.47
  */
 
 #include "wifi_manager.h"
@@ -29,7 +29,7 @@ EventGroupHandle_t wifi_manager_get_event_group(void) {
 void generate_ap_ssid_from_mac(void) {
     uint8_t mac[6];
     esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
-    snprintf(ap_ssid, sizeof(ap_ssid), "ESP32-%02X%02X%02X", mac[3], mac[4], mac[5]);
+    snprintf(ap_ssid, sizeof(ap_ssid), "PianoGuardSetup-%02X%02X%02X", mac[3], mac[4], mac[5]);
     ESP_LOGI(TAG, "Generated AP SSID: %s", ap_ssid);
 }
 
