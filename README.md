@@ -1,35 +1,18 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+feat: Implement provisioning captive portal and stable AP mode
 
-# _Sample project_
+This commit marks the successful implementation of the Wi-Fi provisioning feature. It introduces a robust, message-driven architecture that resolves the previous crash loops and results in a stable Access Point that serves a captive portal for configuration.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+Key Architectural Changes:
+- **Refactored to Message-Driven Design:** Replaced the simple Wi-Fi state model with a sophisticated state machine managed by a FreeRTOS task and message queue (`wifi_manager`). This decouples components and eliminates race conditions.
+- **Introduced Central Controller:** The `main` function now acts as a central controller, orchestrating the application state based on events and NVS status.
+- **Modularized HTTP Server:** The HTTP server and DNS logic for the captive portal are now fully encapsulated in the `http_app` component.
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+Bug Fixes and Stabilization:
+- **Resolved `Invalid mbox` Crash:** The new architecture, where the main controller waits for the `WIFI_MANAGER_AP_STARTED_BIT` event before starting the web server, completely fixes the critical lwIP crash loop.
+- **Corrected Build System Dependencies:** Fixed multiple build failures by correcting the `REQUIRES` vs. `PRIV_REQUIRES` scope in `CMakeLists.txt` and resolving all `#include` order issues.
+- **Stabilized Scan API:** Implemented graceful error handling in the `/api/wifi-scan` endpoint to prevent device resets if a scan fails while in AP mode.
 
-
-
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
-
-## Example folder contents
-
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
-
-```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+Current Status:
+- The device boots cleanly and, when no credentials are in NVS, it successfully starts the "PianoGuard-Setup" Access Point.
+- The captive portal is served at 192.168.4.1.
+- The "Scan for Networks" API call is now stable and ready for final debugging.
